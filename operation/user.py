@@ -1,7 +1,6 @@
 from models.user import Users
 from db_config import db_init as db
 
-
 class user_operation():
     # def all(self):
     #     # excute:select * from users
