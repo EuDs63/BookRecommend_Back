@@ -3,8 +3,8 @@
 import logging
 
 
-def create_logger(app):
-    logger = logging.getLogger(app.name if app else __name__)
+def create_logger(name):
+    logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
     handler = logging.StreamHandler()
