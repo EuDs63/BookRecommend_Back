@@ -3,7 +3,7 @@ from db_config import db_init as db
 
 
 class user_operation:
-    # def all(self):
+    #     def all(self):
     #     execute:select * from users
     #     data = Users.query.all()
     #     return  data

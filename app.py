@@ -1,7 +1,5 @@
 from flask import Flask, Blueprint
 from routes.user import user
-
-# app = Flask(__name__
 from db_config import app
 
 # 第2步 注册模块user
@@ -14,4 +12,4 @@ def ping():
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5002, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
