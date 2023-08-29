@@ -12,6 +12,5 @@ class Users(db.Model):
     register_time = db.Column(db.DateTime, nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
-
     def __repr__(self):
         return '<User %s>' % self.username
