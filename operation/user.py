@@ -5,6 +5,8 @@ from db_config import db_init as db
 class user_operation:
     #     def all(self):
     #     execute:select * from users
+    #     data = Users.query.all()
+    #     return  data
 
     def login(self, username, password):
         user = Users.query.filter_by(username=username).first()
