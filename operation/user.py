@@ -13,3 +13,9 @@ class user_operation:
     def getUserByUsername(self, username):
         user = Users.query.filter_by(username=username).first()
         return user
+
+    def addUser(self, username, password, register_time):
+        user = Users(username=username, password=password, register_time=register_time)
+        db.session.add(user)
+        db.session.commit()
+        return user

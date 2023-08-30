@@ -1,5 +1,4 @@
 from operation.user import user_operation
-from flask import jsonify
 from logger import create_logger
 from utils.data_process import Data_Process
 
@@ -24,4 +23,20 @@ def user_login(username, password):
     else:
         result['code'] = -1
         result['msg'] = "username does not exit"
+    return result
+
+
+# 注册
+def user_register(username, password, register_time):
+    result = {}
+    u = user_operation()
+    data = u.getUserByUsername(username)
+    if data is not None:
+        result['code'] = -1  # 用户名重复，注册失败
+        result['msg'] = "register fail, username already exits"
+    else:
+        new_user = u.addUser(username, password, register_time)
+        result['code'] = 0  # 注册成功
+        result['msg'] = "register success"
+        logger.info("{} register successfully!".format(username))
     return result
