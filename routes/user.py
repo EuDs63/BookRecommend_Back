@@ -21,9 +21,17 @@ def login():
     return result
 
 
-@user.route('/register')
+@user.route('/register',methods=['POST'])
 def register():
-    return "register"
+    data = json.loads(request.data)
+    # 获取数据
+    username = data['username']
+    password = data['password']
+    register_time = data['register_time']
+    logger.info("{} try to register!".format(username))
+    # 调用api
+    result = user_register(username, password,register_time)
+    return result
 
 
 @user.route('/changeinfo')

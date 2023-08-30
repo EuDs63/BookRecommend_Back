@@ -7,9 +7,16 @@ class user_operation:
     #     execute:select * from users
     #     data = Users.query.all()
     #     return  data
+    def __init__(self):
+        self.fields = ['user_id', 'username', 'register_time', 'is_admin']
 
-    def login(self, username, password):
+    def getUserByUsername(self, username):
         user = Users.query.filter_by(username=username).first()
-        print(user.username)
-        print(user.password)
+        return user
+
+    # 添加用户
+    def addUser(self, username, password, register_time):
+        user = Users(username=username, password=password, register_time=register_time)
+        db.session.add(user)
+        db.session.commit()
         return user
