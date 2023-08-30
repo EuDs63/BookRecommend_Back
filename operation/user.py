@@ -14,6 +14,7 @@ class user_operation:
         user = Users.query.filter_by(username=username).first()
         return user
 
+    # 添加用户
     def addUser(self, username, password, register_time):
         user = Users(username=username, password=password, register_time=register_time)
         db.session.add(user)
