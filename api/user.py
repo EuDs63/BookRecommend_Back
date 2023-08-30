@@ -1,3 +1,4 @@
+from models.user import bcrypt
 from operation.user import user_operation
 from logger import create_logger
 from utils.data_process import Data_Process
@@ -12,7 +13,7 @@ def user_login(username, password):
     u = user_operation()
     data = u.getUserByUsername(username)
     if data is not None:
-        if data.password == password:
+        if bcrypt.check_password_hash(data.password, password): # True
             result['code'] = 0
             result['msg'] = "login success"
             # data 数据处理
