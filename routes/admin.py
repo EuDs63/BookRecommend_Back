@@ -26,6 +26,8 @@ def login():
 def getAllUsers():
     logger.info("try to return all user information")
     # 调用api
+    result = admin_getAllUsers()
+    return result
 
 
 # 管理员注册:区别仅在于is_admin

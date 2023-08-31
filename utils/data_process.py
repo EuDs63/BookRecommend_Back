@@ -1,7 +1,6 @@
 # 目的： database data  =======>  dict data/array data
 
-#           参数（数据源，哪些字段，数组0/对象1）
-def Data_Process(data, fields, type=0):
+def Data_Process(data, fields, type=0): # （数据源，哪些字段，数组0/对象1）
     if not type:  # data: [obj,obj,obj,obj,obj,...]
         # 声明新 空 数组
         result = []

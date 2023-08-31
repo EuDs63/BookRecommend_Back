@@ -19,9 +19,4 @@ class user_operation:
         db.session.commit()
         return user
 
-    # 添加管理员
-    def addAdmin(self, username, password, register_time):
-        admin = Users(username=username, unencrypted_password=password, register_time=register_time, is_admin=True)
-        db.session.add(admin)
-        db.session.commit()
-        return admin
+
