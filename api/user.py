@@ -18,6 +18,7 @@ def user_login(username, password):
             result['msg'] = "login success"
             # data 数据处理
             result['user'] = Data_Process(data, u.fields, 1)
+            logger.info("{} login successfully!".format(username))
         else:
             result['code'] = -1
             result['msg'] = "err password"
