@@ -1,11 +1,13 @@
 from flask import Flask, Blueprint
 from routes.user import user
 from routes.admin import admin
+from routes.book import book
 from db_config import app
 from flask_cors import CORS
 
 app.register_blueprint(user, url_prefix='/user')
 app.register_blueprint(admin, url_prefix='/admin')
+app.register_blueprint(book, url_prefix='/book')
 CORS(app)
 
 
