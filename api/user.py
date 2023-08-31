@@ -13,7 +13,7 @@ def user_login(username, password):
     u = user_operation()
     data = u.getUserByUsername(username)
     if data is not None:
-        if bcrypt.check_password_hash(data.password, password): # True
+        if bcrypt.check_password_hash(data.password, password):  # True
             result['code'] = 0
             result['msg'] = "login success"
             # data 数据处理
@@ -28,7 +28,7 @@ def user_login(username, password):
     return result
 
 
-# 注册
+# 用户注册
 def user_register(username, password, register_time):
     result = {}
     u = user_operation()
@@ -42,3 +42,6 @@ def user_register(username, password, register_time):
         result['msg'] = "register success"
         logger.info("{} register successfully!".format(username))
     return result
+
+
+
