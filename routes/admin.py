@@ -21,6 +21,12 @@ def login():
     result = user_login(username, password)
     return result
 
+# 获取全部用户信息
+@admin.route('/getAllUsers',methods=['GET'])
+def getAllUsers():
+    logger.info("try to return all user information")
+    # 调用api
+
 
 # 管理员注册:区别仅在于is_admin
 @admin.route('/register', methods=['POST'])

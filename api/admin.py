@@ -1,5 +1,6 @@
 from models.user import bcrypt
 from operation.user import user_operation
+from operation.admin import admin_operation
 from logger import create_logger
 from utils.data_process import Data_Process
 
@@ -21,3 +22,9 @@ def admin_register(username, password, register_time):
         result['msg'] = "register to be an admin success"
         logger.info("{} register to be an admin successfully!".format(username))
     return result
+
+# 获取所有用户的信息
+def admin_getAllUsers():
+    result = {}
+    a = admin_operation()
+    data = a.getAllUser()
