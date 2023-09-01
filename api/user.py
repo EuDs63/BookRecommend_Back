@@ -36,6 +36,9 @@ def user_register(username, password, register_time):
     if data is not None:
         result['code'] = -1  # 用户名重复，注册失败
         result['msg'] = "register fail, username already exits"
+    elif password is None:
+        result['code'] = -1  # 用户名重复，注册失败
+        result['msg'] = "register fail, password must be non-empty"
     else:
         new_user = u.addUser(username, password, register_time)
         result['code'] = 0  # 注册成功

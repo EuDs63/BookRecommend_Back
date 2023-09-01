@@ -16,8 +16,11 @@ def admin_register(username, password, register_time):
     if data is not None:
         result['code'] = -1  # 用户名重复，注册失败
         result['msg'] = "register fail, username already exits"
+    elif password is None:
+        result['code'] = -1  # 用户名重复，注册失败
+        result['msg'] = "register fail, password must be non-empty"
     else:
-        # 无同名用户，允许注册
+        # 允许注册
         a = admin_operation()  # 使用admin_operation操作数据库
         new_user = a.addAdmin(username, password, register_time)
         result['code'] = 0  # 注册成功
