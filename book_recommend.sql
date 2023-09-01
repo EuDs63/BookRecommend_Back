@@ -77,7 +77,9 @@ CREATE TABLE `user_collect` (
   `collect_time` datetime NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`collect_id`),
   KEY `user_id` (`user_id`),
-  KEY `book_id` (`book_id`)
+  KEY `book_id` (`book_id`),
+  CONSTRAINT `user_collect_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`user_id`),
+  CONSTRAINT `user_collect_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `Books` (`book_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_rating` (
@@ -88,7 +90,9 @@ CREATE TABLE `user_rating` (
   `rating_time` datetime NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`rating_id`),
   KEY `user_id` (`user_id`),
-  KEY `book_id` (`book_id`)
+  KEY `book_id` (`book_id`),
+  CONSTRAINT `user_rating_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`user_id`),
+  CONSTRAINT `user_rating_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `Books` (`book_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_comment` (
@@ -99,7 +103,9 @@ CREATE TABLE `user_comment` (
   `create_time` datetime NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`comment_id`),
   KEY `book_id` (`book_id`),
-  KEY `user_id` (`user_id`)
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_comment_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `Books` (`book_id`),
+  CONSTRAINT `user_comment_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `Users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 SET foreign_key_checks = 1;

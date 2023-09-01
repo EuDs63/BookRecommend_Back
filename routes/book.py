@@ -2,7 +2,8 @@ from flask import Blueprint, request
 import json
 from logger import create_logger
 from db_config import db_init as db
-from models.books import Books
+from models.book import Books
+from api.book import *
 
 logger = create_logger(__name__)
 
@@ -41,4 +42,23 @@ def insert_books():
             db.session.commit()
 
     print("插入完成")
-    return("数据库更新成功")
+    return ("数据库更新成功")
+
+
+# 根据id获取图书信息 根据前端需求的不同，所返回的图书信息包含的内容也应不同
+# type 类型:
+# 0 recommendedBooksData： 'book_id','author','cover_image_url','title','rating_avg','description'
+# 1 bookDetailsData : 'book_id','isbn','cover_image_url','title','author','publisher','rating_avg',
+#                     'publish_date','page_num','category','description','rating_num','comment_count'
+@book.route('/<int:book_id>/<int:info_type>')
+def get_book_info(book_id, info_type):
+    logger.info("try to get book info,book_id is {}, type is {} ".format(book_id, info_type))
+    result = {}
+    if info_type == 0:
+        result = get_basic_book_info(book_id)
+    elif info_type == 1:
+        result = get_detail_book_info(book_id)
+    else:
+        result['code'] = -1  # 暂无相关需求
+        result['msg'] = "unsupported info_type"
+    return result
