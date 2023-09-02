@@ -45,6 +45,7 @@ def insert_books():
     return ("数据库更新成功")
 
 # 读取books.json中的信息，并加载到数据库中
+# 这个过程应包含四个表的更新:books,book_categories,tags,book_tags
 @book.route('/load_books', methods=['GET'])
 def load_books():
     logger.info("try to load books to database")

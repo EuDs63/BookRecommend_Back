@@ -10,11 +10,14 @@ class book_operation:
 
     def __init__(self):
         self.basic_field = ['book_id', 'author', 'cover_image_url', 'title', 'rating_avg', 'description']
+        self.known_categories = ["文学", "流行", "文化", "生活", "经管", "科技"]  # 类别已经确定为豆瓣所分的六大类，不再改动，所以硬编码
 
+    # 根据book_id获取对应的book
     def getBookById(self, book_id):
         book = Books.query.filter_by(book_id=book_id).first()
         return book
 
+    # 从指定文件中读取数据，并录入到数据库中
     def load_books_to_database(json_file_path):
         with open(json_file_path, 'r', encoding='utf-8') as json_file:
             data = json.load(json_file)
@@ -53,7 +56,7 @@ class book_operation:
                 except Exception as e:
                     db.session.rollback()  # 回滚事务，取消数据库更改
                     logger.error(f"导入数据库时发生异常: {e}")
-                    success_count = success_count-1
-                    pass  # 继续执行后续代码
+                    success_count = success_count - 1
+                    pass  # 跳过异常内容，继续执行后续代码
 
-        return books_count,success_count
+        return books_count, success_count

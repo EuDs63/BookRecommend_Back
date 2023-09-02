@@ -1,5 +1,4 @@
 from db_config import db_init as db
-from datetime import datetime
 
 
 class Books(db.Model):
