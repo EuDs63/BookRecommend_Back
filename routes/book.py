@@ -9,7 +9,7 @@ logger = create_logger(__name__)
 
 book = Blueprint('book', __name__)
 
-
+# 读取douban.txt中的信息，并加载到数据库中
 @book.route('/insert_books', methods=['GET'])
 def insert_books():
     # 打开文本文件并逐行处理
@@ -44,6 +44,12 @@ def insert_books():
     print("插入完成")
     return ("数据库更新成功")
 
+# 读取books.json中的信息，并加载到数据库中
+@book.route('/load_books', methods=['GET'])
+def load_books():
+    logger.info("try to load books to database")
+    result = api_load_books()
+    return result
 
 # 根据id获取图书信息 根据前端需求的不同，所返回的图书信息包含的内容也应不同
 # type 类型:

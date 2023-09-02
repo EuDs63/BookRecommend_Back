@@ -11,7 +11,7 @@ class Books(db.Model):
     title = db.Column(db.String(256), nullable=False, default='')
     author = db.Column(db.String(64), nullable=False, default='')
     publisher = db.Column(db.String(128), nullable=False, default='')
-    publish_date = db.Column(db.String(10), nullable=False, default='')
+    publish_date = db.Column(db.String(12), nullable=False, default='')
     page_num = db.Column(db.Integer, nullable=False, default=0)
     cover_image_url = db.Column(db.String(512), nullable=False, default='')
     description = db.Column(db.Text)

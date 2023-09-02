@@ -6,6 +6,17 @@ from utils.data_process import Data_Process
 logger = create_logger(__name__)
 
 
+def api_load_books():
+    b = book_operation
+    json_file_path = 'D:\BookRecommend\BookRecommend_Back\static\douban.json'
+    count = b.load_books_to_database(json_file_path)
+    books_count = count[0]
+    success_count = count[1]
+    result = {}
+    result['code'] = 0
+    result['msg'] = "计划导入{}本书,成功导入{}本书到数据库".format(books_count,success_count)
+    return result
+
 # recommendedBooksData： 'book_id','author','cover_image_url','title','rating_avg','description'
 def get_basic_book_info(book_id):
     result = {}
