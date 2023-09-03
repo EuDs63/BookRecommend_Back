@@ -111,3 +111,11 @@ CREATE TABLE `user_comment` (
 SET foreign_key_checks = 1;
 
 INSERT INTO users (username, password,register_time,is_admin) values('eric','123456',NOW(),0);
+INSERT INTO categories (name) VALUES
+("文学"),
+("流行"),
+("文化"),
+("生活"),
+("经管"),
+("科技"),
+("杂类");

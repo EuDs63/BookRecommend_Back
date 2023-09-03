@@ -24,25 +24,19 @@ class book_operation:
         return book
 
     # 根据book_id获取其对应的category
-    def get_category_by_book_id(self,book_id):
+    def get_category_by_book_id(self, book_id):
         # 查询book_categories表，获取与给定book_id相关的记录
-        book_category_record = BookCategory.query.filter_by(book_id=book_id).first()
-
-        if book_category_record:
-            # 获取记录中的category_id
-            category_id = book_category_record.category_id
-
-            # 使用category_id查询categories表，获取类别名称
-            category = Category.query.filter_by(category_id=category_id).first()
-
-            if category:
-                return category.name
-
-        # 如果没有找到匹配的记录，或者未找到对应的类别，返回None
-        return None
+        book_category_record = BookCategory.query.filter_by(book_id=book_id).all()
+        # 获取book_category_record分别所对应的category_id
+        category_ids = [record.category_id for record in book_category_record]
+        # 根据category_id在category表查找对应的category
+        categories = Category.query.filter(Category.category_id.in_(category_ids)).all()
+        # 获取category对应的name
+        category_name = [category.name for category in categories]
+        return category_name
 
     # 根据book_id获取其对应的tag
-    def get_tags_by_book_id(self,book_id):
+    def get_tags_by_book_id(self, book_id):
         # 查询book_tags表，获取与给定book_id相关的记录
         book_tag_records = BookTag.query.filter_by(book_id=book_id).all()
 
@@ -58,25 +52,31 @@ class book_operation:
 
     # 插入数据到books
     def insert_data_into_books(self, book_data):
-        # 创建 Books 实例并插入到数据库books中
-        book = Books(
-            isbn=book_data['ISBN'],
-            title=book_data["book_name"],
-            rating_avg=float(book_data["score"]),
-            comment_count=0,
-            author=book_data["author_name"],
-            publisher=book_data["press"],
-            page_num=int(book_data["pages"]),
-            publish_date=book_data["press_year"],
-            cover_image_url=book_data["book_img"],
-            rating_num=int(book_data["number_reviewers"]),
-            description=book_data["introduction"],
-        )
-        db.session.add(book)
-        db.session.flush()
-        # 获取书籍的id
-        book_id = book.book_id
-        db.session.commit()
+        isbn = book_data['ISBN']  # 使用 ISBN 作为唯一标识符
+        # 检查数据库中是否已经存在具有相同 ISBN 的书籍
+        existing_book = Books.query.filter_by(isbn=isbn).first()
+        if existing_book:
+            book_id = existing_book.book_id
+        else:# 不存在
+            # 创建 Books 实例并插入到数据库books中
+            book = Books(
+                isbn=book_data['ISBN'],
+                title=book_data["book_name"],
+                rating_avg=float(book_data["score"]),
+                comment_count=0,
+                author=book_data["author_name"],
+                publisher=book_data["press"],
+                page_num=int(book_data["pages"]),
+                publish_date=book_data["press_year"],
+                cover_image_url=book_data["book_img"],
+                rating_num=int(book_data["number_reviewers"]),
+                description=book_data["introduction"],
+            )
+            db.session.add(book)
+            db.session.flush()
+            # 获取书籍的id
+            book_id = book.book_id
+            db.session.commit()
         return book_id
 
     # 插入数据到book_categories
@@ -84,9 +84,14 @@ class book_operation:
         # 创建一个类别映射字典
         category_mapping = {category: index + 1 for
                             index, category in enumerate(self.known_categories)}
-        category_id = category_mapping.get(category_str, 1)
-        book_category = BookCategory(book_id=book_id, category_id=category_id)
-        db.session.add(book_category)
+        category_id = category_mapping.get(category_str, 7)
+        # 查找book_categories表中是否已经有重复的catagory、book_id
+        book_category_record = BookCategory.query.filter_by(book_id=book_id, category_id=category_id).first()
+        if book_category_record:
+            pass
+        else:  # 没有则添加
+            book_category = BookCategory(book_id=book_id, category_id=category_id)
+            db.session.add(book_category)
 
     def get_or_create_tag_id(self, tag_str):
         # 尝试在tags表中查找给定的tag_str
@@ -104,10 +109,14 @@ class book_operation:
 
     def insert_data_into_book_tag(self, book_id, tag_str):
         tag_id = self.get_or_create_tag_id(tag_str)
-        # 插入book_id和tag_id到book_tags表中
-        book_tag = BookTag(book_id=book_id, tag_id=tag_id)
-        db.session.add(book_tag)
-        db.session.commit()
+        # 在book_tag表中查找是否有重复的book_id、tag_id
+        book_tag_record = BookTag.query.filter_by(book_id=book_id, tag_id=tag_id).first()
+        if book_tag_record:
+            pass
+        else:
+            # 插入book_id和tag_id到book_tags表中
+            book_tag = BookTag(book_id=book_id, tag_id=tag_id)
+            db.session.add(book_tag)
 
     # 从指定文件中读取数据，并录入到数据库中
     # 本函数执行后，四个表的数据会得到更新:books,book_categories,tags,book_tags
@@ -128,7 +137,7 @@ class book_operation:
                 except Exception as e:
                     db.session.rollback()  # 回滚事务，取消数据库更改
                     logger.error(f"导入数据库时发生异常: {e}")
-                    success_count = success_count - 1
+                    success_count = success_count - 1 #这里的success_count是指没有进行异常处理的书，实际books表新增的书会少于这个数
                     pass  # 跳过异常内容，继续执行后续代码
 
         return books_count, success_count
