@@ -1,6 +1,6 @@
 from models.book import Books
 from models.category import Category
-from models.book_category import BookCategory
+from models.book_categories import BookCategory
 from db_config import db_init as db
 import json
 from logger import create_logger
@@ -19,8 +19,9 @@ class book_operation:
         book = Books.query.filter_by(book_id=book_id).first()
         return book
 
+    # 插入数据到books
     def insert_data_into_books(self, book_data):
-        # 创建 Books 实例并插入到数据库
+        # 创建 Books 实例并插入到数据库books中
         book = Books(
             isbn=book_data['ISBN'],
             title=book_data["book_name"],
@@ -35,9 +36,25 @@ class book_operation:
             description=book_data["introduction"],
         )
         db.session.add(book)
+        db.session.flush()
+        # 获取书籍的id
+        book_id = book.book_id
         db.session.commit()
+        return book_id
+
+    # 插入数据到book_categories
+    def insert_data_into_book_categories(self, book_id, category_str):
+        # 创建一个类别映射字典
+        category_mapping = {category: index + 1 for
+                            index, category in enumerate(self.known_categories)}
+        category_id = category_mapping.get(category_str, 1)
+        book_category = BookCategory(book_id=book_id, category_id=category_id)
+        db.session.add(book_category)
+        # db.commit()
 
     # 从指定文件中读取数据，并录入到数据库中
+    # 本函数执行后，四个表的数据会得到更新:books,book_categories,tags,book_tags
+    # categories不更新原因：类别已经定好，本项目存续期间不会改变
     def load_books_to_database(self, json_file_path):
         with open(json_file_path, 'r', encoding='utf-8') as json_file:
             data = json.load(json_file)
@@ -47,7 +64,9 @@ class book_operation:
             for book_id in range(1, books_count + 1):
                 book_data = data[str(book_id)]
                 try:
-                    self.insert_data_into_books(book_data)
+                    book_id = self.insert_data_into_books(book_data)  # 插入数据到books
+                    self.insert_data_into_book_categories(book_id, book_data["category"])  # 插入数据到book_categories
+                    db.session.commit()
                 except Exception as e:
                     db.session.rollback()  # 回滚事务，取消数据库更改
                     logger.error(f"导入数据库时发生异常: {e}")
