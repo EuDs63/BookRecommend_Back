@@ -1,4 +1,4 @@
-from models.user import Users
+from models.users import Users
 from db_config import db_init as db
 
 

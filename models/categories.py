@@ -1,6 +1,6 @@
 from db_config import db_init as db
 
-# Category 模型类
+
 class Category(db.Model):
     # 表名
     __tablename__ = "categories"

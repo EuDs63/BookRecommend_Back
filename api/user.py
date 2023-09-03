@@ -1,4 +1,4 @@
-from models.user import bcrypt
+from models.users import bcrypt
 from operation.user import user_operation
 from logger import create_logger
 from utils.data_process import Data_Process

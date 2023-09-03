@@ -2,7 +2,7 @@ from flask import Blueprint, request
 import json
 from logger import create_logger
 from db_config import db_init as db
-from models.book import Books
+from models.books import Books
 from api.book import *
 
 logger = create_logger(__name__)

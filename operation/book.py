@@ -1,5 +1,5 @@
-from models.book import Books
-from models.category import Category
+from models.books import Books
+from models.categories import Category
 from models.book_categories import BookCategory
 from db_config import db_init as db
 import json
