@@ -7,7 +7,7 @@ logger = create_logger(__name__)
 
 
 def api_load_books():
-    b = book_operation
+    b = book_operation()
     json_file_path = 'D:\BookRecommend\BookRecommend_Back\static\douban.json'
     count = b.load_books_to_database(json_file_path)
     books_count = count[0]
