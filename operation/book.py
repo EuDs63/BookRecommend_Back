@@ -1,6 +1,8 @@
 from models.books import Books
 from models.categories import Category
 from models.book_categories import BookCategory
+from models.tags import Tag
+from models.book_tags import BookTag
 from db_config import db_init as db
 import json
 from logger import create_logger
@@ -52,6 +54,27 @@ class book_operation:
         db.session.add(book_category)
         # db.commit()
 
+    def get_or_create_tag_id(self,tag_str):
+        # 尝试在tags表中查找给定的tag_str
+        tag = Tag.query.filter_by(tag_name=tag_str).first()
+
+        # 如果找到了标签，则返回标签的tag_id
+        if tag:
+            return tag.tag_id
+        else:
+            # 否则，创建一个新的标签并返回其tag_id
+            new_tag = Tag(tag_name=tag_str)
+            db.session.add(new_tag)
+            db.session.commit()
+            return new_tag.tag_id
+
+    def insert_data_into_book_tag(self,book_id, tag_str):
+        tag_id = self.get_or_create_tag_id(tag_str)
+        # 插入book_id和tag_id到book_tags表中
+        book_tag = BookTag(book_id=book_id, tag_id=tag_id)
+        db.session.add(book_tag)
+        db.session.commit()
+
     # 从指定文件中读取数据，并录入到数据库中
     # 本函数执行后，四个表的数据会得到更新:books,book_categories,tags,book_tags
     # categories不更新原因：类别已经定好，本项目存续期间不会改变
@@ -66,6 +89,7 @@ class book_operation:
                 try:
                     book_id = self.insert_data_into_books(book_data)  # 插入数据到books
                     self.insert_data_into_book_categories(book_id, book_data["category"])  # 插入数据到book_categories
+                    self.insert_data_into_book_tag(book_id, book_data["tag"])
                     db.session.commit()
                 except Exception as e:
                     db.session.rollback()  # 回滚事务，取消数据库更改
