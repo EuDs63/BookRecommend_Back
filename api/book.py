@@ -35,11 +35,24 @@ def get_basic_book_info(book_id):
 
 
 # bookDetailsData : 'book_id','isbn','cover_image_url','title','author','publisher','rating_avg',
-#                    'publish_date','page_num','category','description','rating_num','comment_count'
+#                    'publish_date','page_num','description','rating_num','comment_count','category','tag'
 # 需涉及到多表的联调,暂未实现
 def get_detail_book_info(book_id):
     result = {}
-    result['code'] = 0
-    result['msg'] = "success"
-    logger.info("get book detail info successfully ,book_id is {}".format(book_id))
+    b = book_operation()
+    data = b.getBookById(book_id)
+    if data is not None:
+        book = Data_Process(data,b.detail_field,1)
+        category = b.get_category_by_book_id(book_id)
+        tag = b.get_tags_by_book_id(book_id)
+        book["category"] = category
+        book["tag"] = tag
+        result['book'] = book
+        result['code'] = 0
+        result['msg'] = "success"
+        logger.info("get book detail info successfully ,book_id is {}".format(book_id))
+    else:
+        result['code'] = -1  # 获取失败
+        result['msg'] = "can not find such book"
+        logger.info("fail to get book detail info ,book_id is {}".format(book_id))
     return result

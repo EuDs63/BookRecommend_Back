@@ -14,12 +14,47 @@ class book_operation:
 
     def __init__(self):
         self.basic_field = ['book_id', 'author', 'cover_image_url', 'title', 'rating_avg', 'description']
+        self.detail_field = ['book_id', 'isbn', 'cover_image_url', 'title', 'author', 'publisher', 'rating_avg',
+                             'publish_date', 'page_num', 'description', 'rating_num', 'comment_count']
         self.known_categories = ["文学", "流行", "文化", "生活", "经管", "科技"]  # 类别已经确定为豆瓣所分的六大类，不再改动，所以硬编码
 
     # 根据book_id获取对应的book
     def getBookById(self, book_id):
         book = Books.query.filter_by(book_id=book_id).first()
         return book
+
+    # 根据book_id获取其对应的category
+    def get_category_by_book_id(self,book_id):
+        # 查询book_categories表，获取与给定book_id相关的记录
+        book_category_record = BookCategory.query.filter_by(book_id=book_id).first()
+
+        if book_category_record:
+            # 获取记录中的category_id
+            category_id = book_category_record.category_id
+
+            # 使用category_id查询categories表，获取类别名称
+            category = Category.query.filter_by(category_id=category_id).first()
+
+            if category:
+                return category.name
+
+        # 如果没有找到匹配的记录，或者未找到对应的类别，返回None
+        return None
+
+    # 根据book_id获取其对应的tag
+    def get_tags_by_book_id(self,book_id):
+        # 查询book_tags表，获取与给定book_id相关的记录
+        book_tag_records = BookTag.query.filter_by(book_id=book_id).all()
+
+        # 获取这些记录中的tag_id
+        tag_ids = [record.tag_id for record in book_tag_records]
+
+        # 使用tag_id查询tags表，获取标签名称
+        tags = Tag.query.filter(Tag.tag_id.in_(tag_ids)).all()
+
+        # 提取标签名称并返回
+        tag_names = [tag.tag_name for tag in tags]
+        return tag_names
 
     # 插入数据到books
     def insert_data_into_books(self, book_data):
@@ -52,9 +87,8 @@ class book_operation:
         category_id = category_mapping.get(category_str, 1)
         book_category = BookCategory(book_id=book_id, category_id=category_id)
         db.session.add(book_category)
-        # db.commit()
 
-    def get_or_create_tag_id(self,tag_str):
+    def get_or_create_tag_id(self, tag_str):
         # 尝试在tags表中查找给定的tag_str
         tag = Tag.query.filter_by(tag_name=tag_str).first()
 
@@ -68,7 +102,7 @@ class book_operation:
             db.session.commit()
             return new_tag.tag_id
 
-    def insert_data_into_book_tag(self,book_id, tag_str):
+    def insert_data_into_book_tag(self, book_id, tag_str):
         tag_id = self.get_or_create_tag_id(tag_str)
         # 插入book_id和tag_id到book_tags表中
         book_tag = BookTag(book_id=book_id, tag_id=tag_id)
