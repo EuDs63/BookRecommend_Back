@@ -143,12 +143,22 @@ class book_operation:
 
         return books_count, success_count
 
-    # 根据book_id获取其对应的category
+    # 根据category_id获取其对应的book
     def get_book_by_category_id(self, category_id):
         # 查询book_categories表，获取与给定category_id相关的记录
         book_category_record = BookCategory.query.filter_by(category_id=category_id).all()
         # 获取book_category_record分别所对应的book_id
         book_ids = [record.book_id for record in book_category_record]
+        # 根据book_id在books表查找对应的book
+        books = Books.query.filter(Books.book_id.in_(book_ids))
+        return books
+
+    # 根据tag_id获取其对应的book
+    def get_book_by_tag_id(self, tag_id):
+        # 查询book_tags表，获取与给定tag_id相关的记录
+        book_tag_record = BookTag.query.filter_by(tag_id=tag_id).all()
+        # 获取book_tag_record分别所对应的book_id
+        book_ids = [record.book_id for record in book_tag_record]
         # 根据book_id在books表查找对应的book
         books = Books.query.filter(Books.book_id.in_(book_ids))
         return books
@@ -161,6 +171,12 @@ class book_operation:
     # 分页返回特定category的所有书籍信息
     def return_category_book_infos(self, category_id, current_page, per_page):
         books = self.get_book_by_category_id(category_id)
+        books_pagination = books.paginate(page=current_page, per_page=per_page, error_out=False)
+        return books_pagination
+
+    # 分页返回特定tag的所有书籍信息
+    def return_tag_book_infos(self, tag_id, current_page, per_page):
+        books = self.get_book_by_tag_id(tag_id)
         books_pagination = books.paginate(page=current_page, per_page=per_page, error_out=False)
         return books_pagination
 
