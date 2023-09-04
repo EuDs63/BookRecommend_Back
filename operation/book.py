@@ -6,6 +6,7 @@ from models.book_tags import BookTag
 from db_config import db_init as db
 import json
 from logger import create_logger
+from utils.data_process import Data_Process
 
 logger = create_logger(__name__)
 
@@ -142,8 +143,24 @@ class book_operation:
 
         return books_count, success_count
 
+    # 根据book_id获取其对应的category
+    def get_book_by_category_id(self, category_id):
+        # 查询book_categories表，获取与给定category_id相关的记录
+        book_category_record = BookCategory.query.filter_by(category_id=category_id).all()
+        # 获取book_category_record分别所对应的book_id
+        book_ids = [record.book_id for record in book_category_record]
+        # 根据book_id在books表查找对应的book
+        books = Books.query.filter(Books.book_id.in_(book_ids))
+        return books
 
-# 按页返回所有书籍信息
-    def return_all_book_infos_by_page(self,current_page, per_page):
+    # 按页返回所有书籍信息
+    def return_all_book_infos(self, current_page, per_page):
         books_pagination = Books.query.paginate(page=current_page, per_page=per_page, error_out=False)
         return books_pagination
+
+    # 分页返回特定category的所有书籍信息
+    def return_category_book_infos(self, category_id, current_page, per_page):
+        books = self.get_book_by_category_id(category_id)
+        books_pagination = books.paginate(page=current_page, per_page=per_page, error_out=False)
+        return books_pagination
+

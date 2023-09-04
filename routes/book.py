@@ -81,3 +81,24 @@ def get_all_books():
     logger.info("try to get all book info,current page is {} ".format(page))
     result = api_get_all_books(page, per_page)
     return result
+
+
+# 根据category_id分页返回该类下所有的书籍信息
+@book.route('/category', methods=['GET'])
+def get_category_books():
+    category_id = request.args.get('category_id', 1, type=int)
+    page = request.args.get('page', 1, type=int)  # 所要查询的页号，默认值为1
+    per_page = request.args.get('per_page', 20, type=int)  # 每页显示的书籍数量,默认值为20
+    logger.info("try to get book info which category_id is {},current page is {} ".format(category_id, page))
+    result = api_get_category_book(category_id, page, per_page)
+    return result
+
+# 根据category_id分页返回该类下所有的书籍信息
+@book.route('/category', methods=['GET'])
+def get_category_books():
+    category_id = request.args.get('category_id', 1, type=int)
+    page = request.args.get('page', 1, type=int)  # 所要查询的页号，默认值为1
+    per_page = request.args.get('per_page', 20, type=int)  # 每页显示的书籍数量,默认值为20
+    logger.info("try to get book info which category_id is {},current page is {} ".format(category_id, page))
+    result = api_get_category_book(category_id, page, per_page)
+    return result

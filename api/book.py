@@ -1,6 +1,6 @@
 from operation.book import book_operation
 from logger import create_logger
-from utils.data_process import Data_Process
+from utils.data_process import Data_Process, Paginate_Process
 
 # logger
 logger = create_logger(__name__)
@@ -59,20 +59,22 @@ def get_detail_book_info(book_id):
     return result
 
 
-# 分页返回书籍信息
+# 分页返回所有书籍信息
 def api_get_all_books(current_page, per_page):
-    result = {}
     b = book_operation()
-    books_pagination = b.return_all_book_infos_by_page(current_page, per_page)
-    total_pages = books_pagination.pages
-    total_records = books_pagination.total  # 获取总记录数
-    if current_page > total_pages:
-        result['code'] = -1
-        result['msg'] = "请求的current_page已超出"
-    else:
-        result['books'] = Data_Process(books_pagination, b.detail_field, 0)
-        result['code'] = 0
-    result['total_records'] = total_records
-    result['total_pages'] = total_pages
-    result['per_page'] = per_page
+    # 对所有书籍信息进行分页查询
+    books_pagination = b.return_all_book_infos(current_page, per_page)
+    # 对得到的分页查询进行处理
+    result = Paginate_Process(books_pagination, current_page, b.detail_field)
+    return result
+
+
+# 分页返回特定category的所有书籍基本信息
+def api_get_category_book(category_id, current_page, per_page):
+    b = book_operation()
+    # 对所有书籍信息进行分页查询
+    books_pagination = b.return_category_book_infos(category_id, current_page, per_page)
+    # 对得到的分页查询进行处理
+    result = Paginate_Process(books_pagination, current_page, b.basic_field)
+    result['category_id'] = category_id
     return result
