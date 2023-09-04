@@ -9,6 +9,7 @@ logger = create_logger(__name__)
 
 book = Blueprint('book', __name__)
 
+
 # 读取douban.txt中的信息，并加载到数据库中
 @book.route('/insert_books', methods=['GET'])
 def insert_books():
@@ -44,6 +45,7 @@ def insert_books():
     print("插入完成")
     return ("数据库更新成功")
 
+
 # 读取books.json中的信息，并加载到数据库中
 # 这个过程应包含四个表的更新:books,book_categories,tags,book_tags
 @book.route('/load_books', methods=['GET'])
@@ -51,6 +53,7 @@ def load_books():
     logger.info("try to load books to database")
     result = api_load_books()
     return result
+
 
 # 根据id获取图书信息 根据前端需求的不同，所返回的图书信息包含的内容也应不同
 # type 类型:
@@ -68,4 +71,13 @@ def get_book_info(book_id, info_type):
     else:
         result['code'] = -1  # 暂无相关需求
         result['msg'] = "unsupported info_type"
+    return result
+
+
+@book.route('/all', methods=['GET'])
+def get_all_books():
+    page = request.args.get('page', 1, type=int)  # 所要查询的页号，默认值为1
+    per_page = request.args.get('per_page', 20, type=int)  # 每页显示的书籍数量,默认值为20
+    logger.info("try to get all book info,current page is {} ".format(page))
+    result = api_get_all_books(page, per_page)
     return result

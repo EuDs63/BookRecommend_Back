@@ -57,7 +57,7 @@ class book_operation:
         existing_book = Books.query.filter_by(isbn=isbn).first()
         if existing_book:
             book_id = existing_book.book_id
-        else:# 不存在
+        else:  # 不存在
             # 创建 Books 实例并插入到数据库books中
             book = Books(
                 isbn=book_data['ISBN'],
@@ -137,7 +137,13 @@ class book_operation:
                 except Exception as e:
                     db.session.rollback()  # 回滚事务，取消数据库更改
                     logger.error(f"导入数据库时发生异常: {e}")
-                    success_count = success_count - 1 #这里的success_count是指没有进行异常处理的书，实际books表新增的书会少于这个数
+                    success_count = success_count - 1  # 这里的success_count是指没有进行异常处理的书，实际books表新增的书会少于这个数
                     pass  # 跳过异常内容，继续执行后续代码
 
         return books_count, success_count
+
+
+# 按页返回所有书籍信息
+    def return_all_book_infos_by_page(self,current_page, per_page):
+        books_pagination = Books.query.paginate(page=current_page, per_page=per_page, error_out=False)
+        return books_pagination

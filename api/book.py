@@ -14,8 +14,9 @@ def api_load_books():
     success_count = count[1]
     result = {}
     result['code'] = 0
-    result['msg'] = "计划导入{}本书,成功导入{}本书到数据库".format(books_count,success_count)
+    result['msg'] = "计划导入{}本书,成功导入{}本书到数据库".format(books_count, success_count)
     return result
+
 
 # recommendedBooksData： 'book_id','author','cover_image_url','title','rating_avg','description'
 def get_basic_book_info(book_id):
@@ -42,7 +43,7 @@ def get_detail_book_info(book_id):
     b = book_operation()
     data = b.getBookById(book_id)
     if data is not None:
-        book = Data_Process(data,b.detail_field,1)
+        book = Data_Process(data, b.detail_field, 1)
         category = b.get_category_by_book_id(book_id)
         tag = b.get_tags_by_book_id(book_id)
         book["category"] = category
@@ -55,4 +56,23 @@ def get_detail_book_info(book_id):
         result['code'] = -1  # 获取失败
         result['msg'] = "can not find such book"
         logger.info("fail to get book detail info ,book_id is {}".format(book_id))
+    return result
+
+
+# 分页返回书籍信息
+def api_get_all_books(current_page, per_page):
+    result = {}
+    b = book_operation()
+    books_pagination = b.return_all_book_infos_by_page(current_page, per_page)
+    total_pages = books_pagination.pages
+    total_records = books_pagination.total  # 获取总记录数
+    if current_page > total_pages:
+        result['code'] = -1
+        result['msg'] = "请求的current_page已超出"
+    else:
+        result['books'] = Data_Process(books_pagination, b.detail_field, 0)
+        result['code'] = 0
+    result['total_records'] = total_records
+    result['total_pages'] = total_pages
+    result['per_page'] = per_page
     return result
