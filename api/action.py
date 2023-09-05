@@ -6,6 +6,7 @@ from utils.data_process import Data_Process, Paginate_Process
 # logger
 logger = create_logger(__name__)
 
+
 def api_add_action(type, user_id, book_id, content):
     result = {}
     a = action_operation()
@@ -31,3 +32,20 @@ def api_add_action(type, user_id, book_id, content):
         result["msg"] = f"add action fail,the reason is {e}"
     return result
 
+
+def api_get_action(type, method, book_id, user_id):
+    result = {}
+    a = action_operation()
+    # 根据type来区分不同的action:
+    # 1：collect; 2：comment 3: rating
+    if type == 1:  # collect
+        result["content"] = a.get_user_collect(method, book_id, user_id)
+    elif type == 2:  # comment
+        result["content"] = a.get_user_comment(method, user_id, book_id)
+    elif type == 3:  # rating
+        result["content"] = a.get_user_rating(method, book_id, user_id)
+    else:
+        result["code"] = -1
+        result["msg"] = "不支持的action type"
+
+    return result
