@@ -12,7 +12,7 @@ def admin_register(username, password, register_time):
     result = {}
     # 通过user_operation查询数据库中是否存在同名yonghu
     u = user_operation()
-    data = u.getUserByUsername(username)
+    data = u.get_user_by_username(username)
     if data is not None:
         result['code'] = -1  # 用户名重复，注册失败
         result['msg'] = "register fail, username already exits"
@@ -40,5 +40,5 @@ def admin_getAllUsers():
         result['msg'] = "get all users fail"
     else:
         result['code'] = 0  # 成功
-        result['users'] = Data_Process(data, u.fields, 0)
+        result['users'] = Data_Process(data, u.detail_field, 0)
     return result

@@ -11,13 +11,13 @@ logger = create_logger(__name__)
 def user_login(username, password):
     result = {}
     u = user_operation()
-    data = u.getUserByUsername(username)
+    data = u.get_user_by_username(username)
     if data is not None:
         if bcrypt.check_password_hash(data.password, password):  # True
             result['code'] = 0
             result['msg'] = "login success"
             # data 数据处理
-            result['user'] = Data_Process(data, u.fields, 1)
+            result['user'] = Data_Process(data, u.detail_field, 1)
             logger.info("{} login successfully!".format(username))
         else:
             result['code'] = -1
@@ -32,7 +32,7 @@ def user_login(username, password):
 def user_register(username, password, register_time):
     result = {}
     u = user_operation()
-    data = u.getUserByUsername(username)
+    data = u.get_user_by_username(username)
     if data is not None:
         result['code'] = -1  # 用户名重复，注册失败
         result['msg'] = "register fail, username already exits"
@@ -40,7 +40,7 @@ def user_register(username, password, register_time):
         result['code'] = -1  # 用户名重复，注册失败
         result['msg'] = "register fail, password must be non-empty"
     else:
-        new_user = u.addUser(username, password, register_time)
+        new_user = u.add_user(username, password, register_time)
         result['code'] = 0  # 注册成功
         result['msg'] = "register success"
         logger.info("{} register successfully!".format(username))
@@ -50,5 +50,21 @@ def user_register(username, password, register_time):
 # 信息修改
 def api_change_avatar(user_id, avatar_path):
     u = user_operation()
-    result = u.operation_change_avatar(user_id,avatar_path)
+    result = u.change_avatar(user_id, avatar_path)
+    return result
+
+# avatar_path,username,register_time
+def get_userinfo_by_user_id(user_id):
+    result = {}
+    u = user_operation()
+    user = u.get_user_by_userid(user_id)
+    if user is not None:
+        # result['avatar_path'] = user.avatar_path
+        # result['username'] = user.username
+        # result['register_time'] = user.register_time
+        result['code'] = 0  #
+        result['user'] = Data_Process(user, u.basic_field, 1)
+    else:
+        result['code'] = -1
+        result['msg'] = "fail to find required user"
     return result

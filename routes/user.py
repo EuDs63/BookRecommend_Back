@@ -42,11 +42,15 @@ def changeinfo():
     return "changeinfo"
 
 
-@user.route('/getinfo')
-def getinfo():
-    return "getinfo"
+# 根据user_id获取用户信息：avatar_path,username,register_time
+@user.route('/<int:user_id>')
+def getinfo(user_id):
+    logger.info("try to get user info,user_id is {}".format(user_id))
+    result  = get_userinfo_by_user_id(user_id)
+    return result
 
 
+# 上传头像
 @user.route('/upload-avatar', methods=['POST'])
 def upload_avatar():
     result = {}
