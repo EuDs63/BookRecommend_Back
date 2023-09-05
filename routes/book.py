@@ -93,6 +93,7 @@ def get_category_books():
     result = api_get_category_book(category_id, page, per_page)
     return result
 
+
 # 根据tag_id分页返回该类下所有的书籍信息
 @book.route('/tag', methods=['GET'])
 def get_tag_books():
@@ -103,4 +104,18 @@ def get_tag_books():
     logger.info("try to get book info which tag_id is {}, current page is {} ".format(tag_id, page))
     # 调用api
     result = api_get_tag_book(tag_id, page, per_page)
+    return result
+
+
+# 实现搜索功能
+@book.route('/search', methods=['GET'])
+def search():
+    # 获取用户输入的搜索关键字
+    keyword = request.args.get('keyword', '')
+    page = request.args.get('page', 1, type=int)  # 所要查询的页号，默认值为1
+    per_page = request.args.get('per_page', 20, type=int)  # 每页显示的书籍数量,默认值为20
+    method = request.args.get('method', 1, type=int)  # 搜索方法：默认为1（对标题、作者）进行模糊搜索
+    logger.info("try to search book info which keyword is {}, current page is {} ".format(keyword, page))
+    # 调用api
+    result = api_get_searched_book(keyword, page, per_page,method)
     return result

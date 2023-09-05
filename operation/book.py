@@ -16,6 +16,8 @@ class book_operation:
         self.basic_field = ['book_id', 'author', 'cover_image_url', 'title', 'rating_avg', 'description']
         self.detail_field = ['book_id', 'isbn', 'cover_image_url', 'title', 'author', 'publisher', 'rating_avg',
                              'publish_date', 'page_num', 'description', 'rating_num', 'comment_count']
+        self.search_field = ['book_id', 'author', 'cover_image_url', 'title', 'rating_avg', 'description', 'publisher',
+                             'publish_date']
         self.known_categories = ["文学", "流行", "文化", "生活", "经管", "科技"]  # 类别已经确定为豆瓣所分的六大类，不再改动，所以硬编码
 
     # 根据book_id获取对应的book
@@ -179,3 +181,11 @@ class book_operation:
         books_pagination = books.paginate(page=current_page, per_page=per_page, error_out=False)
         return books_pagination
 
+    # 分页返回搜索得到的所有书籍信息
+    def return_searched_book_infos(self, keyword, current_page, per_page, method):
+        if method == 1:
+            books = Books.query.filter(
+                (Books.title.ilike(f'%{keyword}%')) | (Books.author.ilike(f'%{keyword}%'))
+            )
+            books_pagination = books.paginate(page=current_page, per_page=per_page, error_out=False)
+            return books_pagination

@@ -37,7 +37,7 @@ def get_basic_book_info(book_id):
 
 # bookDetailsData : 'book_id','isbn','cover_image_url','title','author','publisher','rating_avg',
 #                    'publish_date','page_num','description','rating_num','comment_count','category','tag'
-# 需涉及到多表的联调,暂未实现
+# 需涉及到多表的联调,已实现
 def get_detail_book_info(book_id):
     result = {}
     b = book_operation()
@@ -72,7 +72,7 @@ def api_get_all_books(current_page, per_page):
 # 分页返回特定category的所有书籍基本信息
 def api_get_category_book(category_id, current_page, per_page):
     b = book_operation()
-    # 对所有书籍信息进行分页查询
+    # 进行分页查询
     books_pagination = b.return_category_book_infos(category_id, current_page, per_page)
     # 对得到的分页查询进行处理
     result = Paginate_Process(books_pagination, current_page, b.basic_field)
@@ -82,9 +82,22 @@ def api_get_category_book(category_id, current_page, per_page):
 # 分页返回特定tag的所有书籍基本信息
 def api_get_tag_book(tag_id, current_page, per_page):
     b = book_operation()
-    # 对所有书籍信息进行分页查询
+    # 进行分页查询
     books_pagination = b.return_tag_book_infos(tag_id, current_page, per_page)
     # 对得到的分页查询进行处理
     result = Paginate_Process(books_pagination, current_page, b.basic_field)
     result['tag_id'] = tag_id
+    return result
+
+def api_get_searched_book(keyword, current_page, per_page,method):
+    b = book_operation()
+    result = {}
+    # 进行分页查询
+    books_pagination = b.return_searched_book_infos(keyword, current_page, per_page,method)
+    if books_pagination is not None:
+        # 对得到的分页查询进行处理
+        result = Paginate_Process(books_pagination, current_page, b.search_field)
+    else:
+        result['code'] = -1
+        result['msg'] = "search fail"
     return result
