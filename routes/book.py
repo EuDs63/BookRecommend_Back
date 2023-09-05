@@ -119,3 +119,12 @@ def search():
     # 调用api
     result = api_get_searched_book(keyword, page, per_page,method)
     return result
+
+@book.route('/edit', methods=['POST'])
+def edit():
+    data = json.loads(request.data)
+    # 获取数据
+    book_id = data['book_id']
+    edit_info = data['edit_info']
+    result = api_edit_info(book_id,edit_info)
+    return result

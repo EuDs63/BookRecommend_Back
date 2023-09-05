@@ -1,5 +1,3 @@
-# config/logger.py
-
 import logging
 
 

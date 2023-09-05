@@ -22,7 +22,7 @@ def api_load_books():
 def get_basic_book_info(book_id):
     result = {}
     b = book_operation()
-    data = b.getBookById(book_id)
+    data = b.get_book_by_id(book_id)
     if data is not None:
         result['book'] = Data_Process(data, b.basic_field, 1)
         result['code'] = 0  # 获取成功
@@ -41,7 +41,7 @@ def get_basic_book_info(book_id):
 def get_detail_book_info(book_id):
     result = {}
     b = book_operation()
-    data = b.getBookById(book_id)
+    data = b.get_book_by_id(book_id)
     if data is not None:
         book = Data_Process(data, b.detail_field, 1)
         category = b.get_category_by_book_id(book_id)
@@ -79,6 +79,7 @@ def api_get_category_book(category_id, current_page, per_page):
     result['category_id'] = category_id
     return result
 
+
 # 分页返回特定tag的所有书籍基本信息
 def api_get_tag_book(tag_id, current_page, per_page):
     b = book_operation()
@@ -89,15 +90,28 @@ def api_get_tag_book(tag_id, current_page, per_page):
     result['tag_id'] = tag_id
     return result
 
-def api_get_searched_book(keyword, current_page, per_page,method):
+
+def api_get_searched_book(keyword, current_page, per_page, method):
     b = book_operation()
     result = {}
     # 进行分页查询
-    books_pagination = b.return_searched_book_infos(keyword, current_page, per_page,method)
+    books_pagination = b.return_searched_book_infos(keyword, current_page, per_page, method)
     if books_pagination is not None:
         # 对得到的分页查询进行处理
         result = Paginate_Process(books_pagination, current_page, b.search_field)
     else:
         result['code'] = -1
         result['msg'] = "search fail"
+    return result
+
+
+def api_edit_info(book_id, edit_info):
+    result = {}
+    b = book_operation()
+    if b.edit_info(book_id, edit_info) == 0:
+        result['code'] = 0
+        result['msg'] = "success"
+    else:
+        result['code'] = -1
+        result['msg'] = "fail"
     return result

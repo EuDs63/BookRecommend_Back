@@ -21,7 +21,7 @@ class book_operation:
         self.known_categories = ["文学", "流行", "文化", "生活", "经管", "科技"]  # 类别已经确定为豆瓣所分的六大类，不再改动，所以硬编码
 
     # 根据book_id获取对应的book
-    def getBookById(self, book_id):
+    def get_book_by_id(self, book_id):
         book = Books.query.filter_by(book_id=book_id).first()
         return book
 
@@ -189,3 +189,18 @@ class book_operation:
             )
             books_pagination = books.paginate(page=current_page, per_page=per_page, error_out=False)
             return books_pagination
+
+    def edit_info(self, book_id, edit_info):
+        book = self.get_book_by_id(book_id)
+        if book is not None:
+            # 遍历 edit_info 中的字段，只更新出现的字段内容
+            for key, value in edit_info.items():
+                if hasattr(book, key):
+                    if key == 'book_id':
+                        pass # book_id不允许修改
+                    setattr(book, key, value)
+            # 提交更新到数据库
+            db.session.commit()
+            return 0
+        else:
+            return -1
