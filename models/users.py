@@ -3,6 +3,7 @@ from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt()
 
+
 # 定义user数据模型类
 class Users(db.Model):
     # 表名
@@ -13,6 +14,7 @@ class Users(db.Model):
     password = db.Column(db.String(256), nullable=False)
     register_time = db.Column(db.DateTime, nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    avatar_path = db.Column(db.String(200), nullable=False, default="default.png")
 
     @property
     def unencrypted_password(self):
