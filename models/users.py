@@ -14,7 +14,7 @@ class Users(db.Model):
     password = db.Column(db.String(256), nullable=False)
     register_time = db.Column(db.DateTime, nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
-    avatar_path = db.Column(db.String(200), nullable=False, default="default.png")
+    avatar_path = db.Column(db.String(200), nullable=False, default="static/avatar/default.png")
 
     @property
     def unencrypted_password(self):

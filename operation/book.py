@@ -6,7 +6,6 @@ from models.book_tags import BookTag
 from db_config import db_init as db
 import json
 from logger import create_logger
-from utils.data_process import Data_Process
 
 logger = create_logger(__name__)
 

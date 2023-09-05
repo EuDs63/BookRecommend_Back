@@ -47,4 +47,8 @@ def user_register(username, password, register_time):
     return result
 
 
-
+# 信息修改
+def api_change_avatar(user_id, avatar_path):
+    u = user_operation()
+    result = u.operation_change_avatar(user_id,avatar_path)
+    return result

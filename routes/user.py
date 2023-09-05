@@ -39,7 +39,6 @@ def register():
 
 @user.route('/changeinfo')
 def changeinfo():
-    # 用户信息修改应实现这样的操作：将各种信息修改合在一个函数中
     return "changeinfo"
 
 
@@ -55,7 +54,7 @@ def upload_avatar():
     if 'avatar' not in request.files:
         result['code'] = -1
         result['msg'] = 'No avatar provided'
-        return result
+
     else:
         # 获取POST数据
         avatar_file = request.files['avatar']
@@ -64,9 +63,10 @@ def upload_avatar():
         timestamp = int(time.time())  # 当前时间的时间戳
         filename_without_extension, file_extension = os.path.splitext(avatar_file.filename)
         save_filename = f"user_{user_id}_{timestamp}{file_extension}"
+        save_path = 'static/avatar/' + save_filename
         # 保存文件
-        avatar_file.save('static/avatar/' + save_filename)
+        avatar_file.save(save_path)
         # 调用api,以更新数据库中对应user的avatar_path
-
-
-
+        result['code'] = api_change_avatar(user_id, save_path)
+        result['avatar_path'] = save_path
+    return result
