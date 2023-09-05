@@ -46,7 +46,7 @@ def changeinfo():
 @user.route('/<int:user_id>')
 def getinfo(user_id):
     logger.info("try to get user info,user_id is {}".format(user_id))
-    result  = get_userinfo_by_user_id(user_id)
+    result = get_userinfo_by_user_id(user_id)
     return result
 
 
@@ -58,7 +58,6 @@ def upload_avatar():
     if 'avatar' not in request.files:
         result['code'] = -1
         result['msg'] = 'No avatar provided'
-
     else:
         # 获取POST数据
         avatar_file = request.files['avatar']
@@ -68,9 +67,14 @@ def upload_avatar():
         filename_without_extension, file_extension = os.path.splitext(avatar_file.filename)
         save_filename = f"user_{user_id}_{timestamp}{file_extension}"
         save_path = 'static/avatar/' + save_filename
-        # 保存文件
-        avatar_file.save(save_path)
+
         # 调用api,以更新数据库中对应user的avatar_path
         result['code'] = api_change_avatar(user_id, save_path)
-        result['avatar_path'] = save_path
+        if result['code'] == 0:
+            result['avatar_path'] = save_path
+            # 保存文件
+            avatar_file.save(save_path)
+        else:
+            result['msg'] = 'No such user'
+
     return result
