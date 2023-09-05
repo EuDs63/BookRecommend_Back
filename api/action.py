@@ -40,10 +40,13 @@ def api_get_action(type, method, book_id, user_id):
     # 1：collect; 2：comment 3: rating
     if type == 1:  # collect
         result["content"] = a.get_user_collect(method, book_id, user_id)
+        result["code"] = 0
     elif type == 2:  # comment
         result["content"] = a.get_user_comment(method, user_id, book_id)
+        result["code"] = 0
     elif type == 3:  # rating
         result["content"] = a.get_user_rating(method, book_id, user_id)
+        result["code"] = 0
     else:
         result["code"] = -1
         result["msg"] = "不支持的action type"

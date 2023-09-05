@@ -31,7 +31,7 @@ class action_operation:
     def get_user_collect(self, method, user_id, book_id):
         # 构建结果字典列表
         result = []
-        if method == 1:  # 根据 book_id 查找收藏该书的用户、以及收藏类型、时间 (user_id 在collect_time将本书添加到了collect_type)
+        if method == 1:  # 根据 book_id 查找收藏该书的用户、以及收藏类型、时间 (user_id 在collect_time将本书添加到了collect_type
             # 查询收藏了该书的用户、收藏类型和时间，并获取用户名
             user_collect_records = db.session.query(UserCollect, Users.username) \
                 .join(Users, UserCollect.user_id == Users.user_id) \
