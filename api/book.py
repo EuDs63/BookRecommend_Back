@@ -70,13 +70,14 @@ def api_get_all_books(current_page, per_page):
 
 
 # 分页返回特定category的所有书籍基本信息
-def api_get_category_book(category_id, current_page, per_page):
+def api_get_category_book(category_id, current_page, per_page, order):
     b = book_operation()
     # 进行分页查询
-    books_pagination = b.return_category_book_infos(category_id, current_page, per_page)
+    books_pagination = b.return_category_book_infos(category_id, current_page, per_page,order)
     # 对得到的分页查询进行处理
     result = Paginate_Process(books_pagination, current_page, b.basic_field)
     result['category_id'] = category_id
+    result['order'] = order
     return result
 
 

@@ -1,3 +1,5 @@
+from sqlalchemy import desc
+
 from models.books import Books
 from models.categories import Category
 from models.book_categories import BookCategory
@@ -170,8 +172,12 @@ class book_operation:
         return books_pagination
 
     # 分页返回特定category的所有书籍信息
-    def return_category_book_infos(self, category_id, current_page, per_page):
+    def return_category_book_infos(self, category_id, current_page, per_page,order):
         books = self.get_book_by_category_id(category_id)
+        if order == 1:
+            books = books.order_by(desc(Books.publish_date))
+        elif order == 2:
+            books = books.order_by(desc(Books.rating_num))
         books_pagination = books.paginate(page=current_page, per_page=per_page, error_out=False)
         return books_pagination
 
@@ -197,7 +203,7 @@ class book_operation:
             for key, value in edit_info.items():
                 if hasattr(book, key):
                     if key == 'book_id':
-                        pass # book_id不允许修改
+                        pass  # book_id不允许修改
                     setattr(book, key, value)
             # 提交更新到数据库
             db.session.commit()

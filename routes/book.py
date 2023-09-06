@@ -84,13 +84,15 @@ def get_all_books():
 
 
 # 根据category_id分页返回该类下所有的书籍信息
+# 根据order来区分： 0：默认；1：日期由新到旧；2：rating_num从多到少
 @book.route('/category', methods=['GET'])
 def get_category_books():
     category_id = request.args.get('category_id', 1, type=int)
     page = request.args.get('page', 1, type=int)  # 所要查询的页号，默认值为1
     per_page = request.args.get('per_page', 20, type=int)  # 每页显示的书籍数量,默认值为20
+    order = request.args.get('order', 0, type=int)  # 显示书籍的顺序
     logger.info("try to get book info which category_id is {},current page is {} ".format(category_id, page))
-    result = api_get_category_book(category_id, page, per_page)
+    result = api_get_category_book(category_id, page, per_page,order)
     return result
 
 
@@ -117,8 +119,9 @@ def search():
     method = request.args.get('method', 1, type=int)  # 搜索方法：默认为1（对标题、作者）进行模糊搜索
     logger.info("try to search book info which keyword is {}, current page is {} ".format(keyword, page))
     # 调用api
-    result = api_get_searched_book(keyword, page, per_page,method)
+    result = api_get_searched_book(keyword, page, per_page, method)
     return result
+
 
 @book.route('/edit', methods=['POST'])
 def edit():
@@ -126,5 +129,5 @@ def edit():
     # 获取数据
     book_id = data['book_id']
     edit_info = data['edit_info']
-    result = api_edit_info(book_id,edit_info)
+    result = api_edit_info(book_id, edit_info)
     return result
