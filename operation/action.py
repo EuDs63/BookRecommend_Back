@@ -2,7 +2,7 @@ from models.user_rating import UserRating
 from models.user_collect import UserCollect
 from models.user_comment import UserComment
 from models.users import Users
-from models.books import Books
+from operation.book import book_operation
 from db_config import db_init as db
 import json
 from logger import create_logger
@@ -47,17 +47,18 @@ class action_operation:
                 })
         elif method == 2:  # 根据 user_id 查找该user收藏了哪些书，收藏的类型 （在collect_time将book_id添加到了collect_type
             # 查询用户收藏的书籍、收藏类型和书籍标题
-            user_collect_records = db.session.query(UserCollect, Books.title) \
+            user_collect_records = db.session.query(UserCollect, Books) \
                 .join(Books, UserCollect.book_id == Books.book_id) \
                 .filter(UserCollect.user_id == user_id) \
                 .all()
 
-            for user_collect, book_title in user_collect_records:
+            for user_collect, book in user_collect_records:
+                b = book_operation()
+                book_info = Data_Process(book, b.search_field, 1)
                 result.append({
-                    'book_id': user_collect.book_id,
+                    'book': book_info,
                     'collect_type': user_collect.collect_type,
                     'collect_time': user_collect.collect_time.strftime('%Y-%m-%d %H:%M:%S'),  # 格式化时间
-                    'book_title': book_title
                 })
         elif method == 3:  # 根据 book_id 和 user_id 查找收藏内容 (在collect_time,添加到了collect_type
             user_collect = UserCollect.query.filter_by(user_id=user_id, book_id=book_id).all()
