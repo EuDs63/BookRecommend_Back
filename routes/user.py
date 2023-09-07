@@ -71,35 +71,40 @@ def getinfo(user_id):
     result = get_userinfo_by_user_id(user_id)
     return result
 
-
+# 修改密码
 @user.route('/update_password', methods=['POST'])
 @token_required
 def update_password(*args, **kwargs):
-    # 解析token中的数据，获取user_data
-    user_data = kwargs.get('user_data')
-    # 解析post请求中的数据
-    data = json.loads(request.data)
-    origin_password = data['origin_password']
-    new_password = data['new_password']
-
     result = {}
-    if user_data:
+    # 获取user_data
+    user_data = kwargs.get('user_data')
+
+    if user_data is None:
+        result['code'] = 0
+        result['msg'] = '修改失败；登录状态已过期'
+    else:
+        # 解析token中的数据，获取user_data中所包含的信息
         user_id = user_data.get('user_id')
         password = user_data.get('password')
-        # 检查传入的origin_password是否和实际上的一致
+
+        # 解析post请求中的数据
+        data = json.loads(request.data)
+        origin_password = data['origin_password']
+        new_password = data['new_password']
+
+        # 检查传入的origin_password是否和实际上的password是否一致
         if origin_password == password:
             # 允许修改，调用api
             result['code'] = api_change_password(user_id=user_id, password=new_password)
+            # 检查修改结果
             if result['code'] == 0:
-                result['msg'] = "success"
+                result['msg'] = "修改成功"
             else:
-                result['msg'] = "fail"
+                result['msg'] = "修改失败"
         else:
             result['code'] = 0
             result['msg'] = '输入的原密码不正确'
-    else:
-        result['code'] = 0
-        result['msg'] = 'Access denied'
+
     return result
 
 

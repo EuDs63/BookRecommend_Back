@@ -19,14 +19,14 @@ def user_login(username, password):
             payload = {'user_id': data.user_id, 'username': data.username, 'password': password}
             token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
             result['code'] = 0
-            result['msg'] = "login success"
+            result['msg'] = "登录成功"
             result['token'] = token
             # data 数据处理
             result['user'] = Data_Process(data, u.detail_field, 1)
             logger.info("{} login successfully!".format(username))
         else:
             result['code'] = -1
-            result['msg'] = "err password"
+            result['msg'] = "密码错误"
     else:
         result['code'] = -1
         result['msg'] = "username does not exit"
