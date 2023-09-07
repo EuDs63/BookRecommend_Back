@@ -21,7 +21,6 @@ class user_operation:
 
     # 添加用户
     def add_user(self, username, password, register_time):
-        # user = Users(username=username, password=password, register_time=register_time)
         user = Users(username=username, unencrypted_password=password, register_time=register_time)
         db.session.add(user)
         db.session.commit()
@@ -31,6 +30,17 @@ class user_operation:
         try:
             user = self.get_user_by_userid(user_id)
             user.avatar_path = avatar_path
+            db.session.commit()
+            return 0
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"更改时发生异常: {e}")
+            return -1
+
+    def operation_change_password(self,user_id,password):
+        try:
+            user = self.get_user_by_userid(user_id)
+            user.unencrypted_password = password
             db.session.commit()
             return 0
         except Exception as e:

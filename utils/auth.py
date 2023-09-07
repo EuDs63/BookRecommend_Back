@@ -4,13 +4,13 @@ import jwt
 from flask import request, jsonify
 from db_config import app
 from logger import create_logger
-
+from functools import wraps
 logger = create_logger(__name__)
 
 def token_required(f):
+    @wraps(f)
     def wrapper(*args, **kwargs):
         token = request.headers.get('Authorization')
-        logger.info('here is '+token)
         result = {}
         if not token:
             result['msg'] = 'Token is missing'

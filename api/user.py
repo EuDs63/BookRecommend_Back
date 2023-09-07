@@ -59,6 +59,12 @@ def api_change_avatar(user_id, avatar_path):
     return result
 
 
+def api_change_password(user_id, password):
+    u = user_operation()
+    result = u.operation_change_password(user_id=user_id,password=password)
+    return result
+
+
 # avatar_path,username,register_time
 def get_userinfo_by_user_id(user_id):
     result = {}

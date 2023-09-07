@@ -26,7 +26,6 @@ def login():
     return result
 
 
-
 @user.route('/auto_login', methods=['GET'])
 @token_required
 def auto_login(*args, **kwargs):
@@ -60,9 +59,9 @@ def register():
     return result
 
 
-@user.route('/changeinfo')
-def changeinfo():
-    return "changeinfo"
+@user.route('/info_change', methods=['GET'])
+def info_change(*args, **kwargs):
+    return 'OK'
 
 
 # 根据user_id获取用户信息：avatar_path,username,register_time
@@ -70,6 +69,37 @@ def changeinfo():
 def getinfo(user_id):
     logger.info("try to get user info,user_id is {}".format(user_id))
     result = get_userinfo_by_user_id(user_id)
+    return result
+
+
+@user.route('/update_password', methods=['POST'])
+@token_required
+def update_password(*args, **kwargs):
+    # 解析token中的数据，获取user_data
+    user_data = kwargs.get('user_data')
+    # 解析post请求中的数据
+    data = json.loads(request.data)
+    origin_password = data['origin_password']
+    new_password = data['new_password']
+
+    result = {}
+    if user_data:
+        user_id = user_data.get('user_id')
+        password = user_data.get('password')
+        # 检查传入的origin_password是否和实际上的一致
+        if origin_password == password:
+            # 允许修改，调用api
+            result['code'] = api_change_password(user_id=user_id, password=new_password)
+            if result['code'] == 0:
+                result['msg'] = "success"
+            else:
+                result['msg'] = "fail"
+        else:
+            result['code'] = 0
+            result['msg'] = '输入的原密码不正确'
+    else:
+        result['code'] = 0
+        result['msg'] = 'Access denied'
     return result
 
 
