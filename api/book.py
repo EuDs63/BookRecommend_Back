@@ -6,15 +6,26 @@ from utils.data_process import Data_Process, Paginate_Process
 logger = create_logger(__name__)
 
 
-def api_load_books():
+def api_load_books(json_file_path):
     b = book_operation()
-    json_file_path = 'D:\BookRecommend\BookRecommend_Back\static\douban_09-04_14-15.json'
     count = b.load_books_to_database(json_file_path)
     books_count = count[0]
     success_count = count[1]
     result = {}
     result['code'] = 0
     result['msg'] = "计划导入{}本书,成功导入{}本书到数据库".format(books_count, success_count)
+    return result
+
+def api_insert_book(book_info):
+    result = {}
+    b = book_operation()
+    result['book_id'] = b.insert_book_to_database(book_info)
+    if result['book_id'] == 0:
+        result['code'] = -1
+        result['msg'] = "添加书籍信息失败"
+    else:
+        result['code'] = 0
+        result['msg'] = "添加书籍信息成功"
     return result
 
 
@@ -87,7 +98,7 @@ def api_get_tag_book(tag_id, current_page, per_page):
     # 进行分页查询
     books_pagination = b.return_tag_book_infos(tag_id, current_page, per_page)
     # 对得到的分页查询进行处理
-    result = Paginate_Process(books_pagination, current_page, b.basic_field)
+    result = Paginate_Process(books_pagination, current_page, b.search_field)
     result['tag_id'] = tag_id
     return result
 

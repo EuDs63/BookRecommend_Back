@@ -4,6 +4,8 @@ from logger import create_logger
 from db_config import db_init as db
 from models.books import Books
 from api.book import *
+import os
+import time
 
 logger = create_logger(__name__)
 
@@ -46,14 +48,22 @@ book = Blueprint('book', __name__)
 #     return ("数据库更新成功")
 
 
-# 读取books.json中的信息，并加载到数据库中
+# 读取douban.json中的信息，并加载到数据库中
 # 这个过程应包含四个表的更新:books,book_categories,tags,book_tags
 @book.route('/load_books', methods=['GET'])
 def load_books():
     logger.info("try to load books to database")
-    result = api_load_books()
+    json_file_path = 'D:\BookRecommend\BookRecommend_Back\static\book\douban_09-04_14-15.json'
+    result = api_load_books(json_file_path)
     return result
 
+# 插入一条书的数据到数据库中
+@book.route('insert_book',methods=['POST'])
+def insert_book():
+    book_info = json.loads(request.data)
+    logger.info("try to insert book to database")
+    result = api_insert_book(book_info)
+    return result
 
 # 根据id获取图书信息 根据前端需求的不同，所返回的图书信息包含的内容也应不同
 # type 类型:
@@ -73,6 +83,27 @@ def get_book_info(book_id, info_type):
         result['msg'] = "unsupported info_type"
     return result
 
+# 上传书籍信息文件
+@book.route('/upload_books', methods=['POST'])
+def upload_book():
+    result = {}
+    # 获取上传的文件
+    if 'books' not in request.files:
+        result['code'] = -1
+        result['msg'] = 'No books provided'
+    else:
+        # 获取POST数据
+        book_file = request.files['books']
+        # 生成文件名
+        timestamp = int(time.time())  # 当前时间的时间戳
+        filename_without_extension, file_extension = os.path.splitext(book_file.filename)
+        save_filename = f"books_{timestamp}{file_extension}"
+        save_path = 'static/book/' + save_filename
+        # 保存文件
+        book_file.save(save_path)
+        # 调用api
+        result = api_load_books(json_file_path=save_path)
+    return result
 
 @book.route('/all', methods=['GET'])
 def get_all_books():

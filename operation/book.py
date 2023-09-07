@@ -146,6 +146,19 @@ class book_operation:
 
         return books_count, success_count
 
+    def insert_book_to_database(self,book_info):
+        book_id = 0
+        try:
+            book_id = self.insert_data_into_books(book_info)  # 插入数据到books
+            self.insert_data_into_book_categories(book_id, book_info["category"])  # 插入数据到book_categories
+            self.insert_data_into_book_tag(book_id, book_info["tag"])
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()  # 回滚事务，取消数据库更改
+            logger.error(f"导入数据库时发生异常: {e}")
+            pass  # 跳过异常内容，继续执行后续代码
+        return book_id
+
     # 根据category_id获取其对应的book
     def get_book_by_category_id(self, category_id):
         # 查询book_categories表，获取与给定category_id相关的记录
