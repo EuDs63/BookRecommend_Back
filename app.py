@@ -9,7 +9,7 @@ from flask_cors import CORS
 app.register_blueprint(user, url_prefix='/user')
 app.register_blueprint(admin, url_prefix='/admin')
 app.register_blueprint(book, url_prefix='/book')
-app.register_blueprint(action,url_prefix='/action')
+app.register_blueprint(action, url_prefix='/action')
 CORS(app)
 
 

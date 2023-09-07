@@ -2,6 +2,8 @@ from models.users import bcrypt
 from operation.user import user_operation
 from logger import create_logger
 from utils.data_process import Data_Process
+import jwt
+from db_config import app
 
 # logger
 logger = create_logger(__name__)
@@ -14,8 +16,11 @@ def user_login(username, password):
     data = u.get_user_by_username(username)
     if data is not None:
         if bcrypt.check_password_hash(data.password, password):  # True
+            payload = {'user_id': data.user_id, 'username': data.username}
+            token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
             result['code'] = 0
             result['msg'] = "login success"
+            result['token'] = token
             # data 数据处理
             result['user'] = Data_Process(data, u.detail_field, 1)
             logger.info("{} login successfully!".format(username))
@@ -52,6 +57,7 @@ def api_change_avatar(user_id, avatar_path):
     u = user_operation()
     result = u.change_avatar(user_id, avatar_path)
     return result
+
 
 # avatar_path,username,register_time
 def get_userinfo_by_user_id(user_id):
