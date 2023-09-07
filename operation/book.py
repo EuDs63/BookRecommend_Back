@@ -131,8 +131,8 @@ class book_operation:
             books_count = len(data)
             success_count = books_count
 
-            for book_id in range(1, books_count + 1):
-                book_data = data[str(book_id)]
+            for key, value in data.items():
+                book_data = value
                 try:
                     book_id = self.insert_data_into_books(book_data)  # 插入数据到books
                     self.insert_data_into_book_categories(book_id, book_data["category"])  # 插入数据到book_categories
@@ -143,6 +143,19 @@ class book_operation:
                     logger.error(f"导入数据库时发生异常: {e}")
                     success_count = success_count - 1  # 这里的success_count是指没有进行异常处理的书，实际books表新增的书会少于这个数
                     pass  # 跳过异常内容，继续执行后续代码
+
+            # for book_id in range(1, books_count + 1):
+            #     book_data = data[str(book_id)]
+            #     try:
+            #         book_id = self.insert_data_into_books(book_data)  # 插入数据到books
+            #         self.insert_data_into_book_categories(book_id, book_data["category"])  # 插入数据到book_categories
+            #         self.insert_data_into_book_tag(book_id, book_data["tag"])
+            #         db.session.commit()
+            #     except Exception as e:
+            #         db.session.rollback()  # 回滚事务，取消数据库更改
+            #         logger.error(f"导入数据库时发生异常: {e}")
+            #         success_count = success_count - 1  # 这里的success_count是指没有进行异常处理的书，实际books表新增的书会少于这个数
+            #         pass  # 跳过异常内容，继续执行后续代码
 
         return books_count, success_count
 
