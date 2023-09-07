@@ -39,7 +39,7 @@ def api_get_action(type, method, book_id, user_id):
     # 根据type来区分不同的action:
     # 1：collect; 2：comment 3: rating
     if type == 1:  # collect
-        result["content"] = a.get_user_collect(method, book_id, user_id)
+        result["content"] = a.get_user_collect(method=method,user_id=user_id,book_id=book_id)
         result["code"] = 0
     elif type == 2:  # comment
         result["content"] = a.get_user_comment(method, user_id, book_id)

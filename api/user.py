@@ -16,7 +16,7 @@ def user_login(username, password):
     data = u.get_user_by_username(username)
     if data is not None:
         if bcrypt.check_password_hash(data.password, password):  # True
-            payload = {'user_id': data.user_id, 'username': data.username}
+            payload = {'user_id': data.user_id, 'username': data.username, 'password': password}
             token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
             result['code'] = 0
             result['msg'] = "login success"

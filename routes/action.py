@@ -34,6 +34,6 @@ def get_action():
     user_id = data.get('user_id', 0)  # 如果找不到 'user_id' 键，user_id 将被设置为 0
 
     # 根据 type 和 method 获取相应的内容
-    logger.info("Try to get content, type: {}, method: {}".format(type, method))
+    logger.info("Try to get content, type: {}, method: {},user_id: {}".format(type, method,user_id))
     result = api_get_action(type, method, book_id, user_id)
     return result

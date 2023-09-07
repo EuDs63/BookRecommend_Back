@@ -4,6 +4,7 @@ import json
 from logger import create_logger
 import os
 import time
+from utils.auth import token_required
 
 logger = create_logger(__name__)
 
@@ -11,15 +12,37 @@ user = Blueprint('user', __name__)
 
 
 # 用户登录
+
 @user.route('/login', methods=['POST'])
 def login():
     data = json.loads(request.data)
     # 获取数据
     username = data['username']
     password = data['password']
+
     logger.info("{} try to login!".format(username))
     # 调用api
     result = user_login(username, password)
+    return result
+
+
+
+@user.route('/auto_login', methods=['GET'])
+@token_required
+def auto_login(*args, **kwargs):
+    user_data = kwargs.get('user_data')
+    result = {}
+    if user_data:
+        # 如果 Token 验证成功，你可以在这里访问用户信息并执行相应操作
+        user_id = user_data.get('user_id')
+        username = user_data.get('username')
+        password = user_data.get('password')
+        logger.info("{} try to auto login!".format(username))
+        # 调用api
+        result = user_login(username, password)
+    else:
+        result['code'] = 0
+        result['msg'] = 'Access denied'
     return result
 
 
