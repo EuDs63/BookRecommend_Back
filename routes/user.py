@@ -59,17 +59,13 @@ def register():
     return result
 
 
-@user.route('/info_change', methods=['GET'])
-def info_change(*args, **kwargs):
-    return 'OK'
-
-
 # 根据user_id获取用户信息：avatar_path,username,register_time
 @user.route('/<int:user_id>')
 def getinfo(user_id):
     logger.info("try to get user info,user_id is {}".format(user_id))
     result = get_userinfo_by_user_id(user_id)
     return result
+
 
 # 修改密码
 @user.route('/update_password', methods=['POST'])
@@ -80,7 +76,7 @@ def update_password(*args, **kwargs):
     user_data = kwargs.get('user_data')
 
     if user_data is None:
-        result['code'] = 0
+        result['code'] = -1
         result['msg'] = '修改失败；登录状态已过期'
     else:
         # 解析token中的数据，获取user_data中所包含的信息
@@ -102,7 +98,7 @@ def update_password(*args, **kwargs):
             else:
                 result['msg'] = "修改失败"
         else:
-            result['code'] = 0
+            result['code'] = -1
             result['msg'] = '输入的原密码不正确'
 
     return result
