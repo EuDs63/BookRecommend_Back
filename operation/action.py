@@ -84,15 +84,18 @@ class action_operation:
                 .join(Users, UserComment.user_id == Users.user_id) \
                 .filter(UserComment.book_id == book_id) \
                 .all()
-
+            # 这里的comment_id与数据库中的不同
+            comment_id = 1
             for user_comment, user in user_comment_records:
                 result.append({
+                    'comment_id': comment_id,
                     'user_id': user_comment.user_id,
                     'username': user.username,
                     'avatar_path': user.avatar_path,
                     'content': user_comment.content,
                     'create_time': user_comment.create_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
                 })
+                comment_id = comment_id + 1
 
         elif method == 2:  # 根据 user_id 查找该用户评论了哪些书，以及评论内容和时间 (在create_time对book_id发表了评论)
             user_comment_records = db.session.query(UserComment, Books.title, Books.cover_image_url) \
