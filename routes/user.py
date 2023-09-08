@@ -105,17 +105,19 @@ def update_password(*args, **kwargs):
 
 
 # 上传头像
-@user.route('/upload-avatar', methods=['POST'])
+@user.route('/upload_avatar', methods=['POST'])
 def upload_avatar():
     result = {}
     # 获取上传的文件
     if 'avatar' not in request.files:
         result['code'] = -1
         result['msg'] = 'No avatar provided'
+        logger.info("someone try to change avatar")
     else:
         # 获取POST数据
         avatar_file = request.files['avatar']
         user_id = request.form['user_id']
+        logger.info("{} try to change avatar".format(user_id))
         # 生成文件名
         timestamp = int(time.time())  # 当前时间的时间戳
         filename_without_extension, file_extension = os.path.splitext(avatar_file.filename)
