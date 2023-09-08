@@ -21,7 +21,11 @@ class action_operation:
         db.session.add(user_collect)
 
     def add_user_comment(self, user_id, book_id, content):
+        b = book_operation()
+        book = b.get_book_by_id(book_id)
+        book.comment_count = book.comment_count + 1
         user_comment = UserComment(user_id=user_id, book_id=book_id, content=content)
+        db.session.add(book)
         db.session.add(user_comment)
 
     def add_user_rating(self, user_id, book_id, content):
@@ -90,12 +94,12 @@ class action_operation:
                 })
 
         elif method == 2:  # 根据 user_id 查找该用户评论了哪些书，以及评论内容和时间 (在create_time对book_id发表了评论)
-            user_comment_records = db.session.query(UserComment, Books.title,Books.cover_image_url) \
+            user_comment_records = db.session.query(UserComment, Books.title, Books.cover_image_url) \
                 .join(Books, UserComment.book_id == Books.book_id) \
                 .filter(UserComment.user_id == user_id) \
                 .all()
 
-            for user_comment, title,cover_image_url in user_comment_records:
+            for user_comment, title, cover_image_url in user_comment_records:
                 result.append({
                     'book_id': user_comment.book_id,
                     'title': title,
