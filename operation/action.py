@@ -80,15 +80,16 @@ class action_operation:
         result = []
 
         if method == 1:  # 根据 book_id 查找该书的评论用户、以及评论内容和时间 (user_id 在create_time对book_id发表了评论)
-            user_comment_records = db.session.query(UserComment, Users.username) \
+            user_comment_records = db.session.query(UserComment, Users) \
                 .join(Users, UserComment.user_id == Users.user_id) \
                 .filter(UserComment.book_id == book_id) \
                 .all()
 
-            for user_comment, username in user_comment_records:
+            for user_comment, user in user_comment_records:
                 result.append({
                     'user_id': user_comment.user_id,
-                    'username': username,
+                    'username': user.username,
+                    'avatar_path': user.avatar_path,
                     'content': user_comment.content,
                     'create_time': user_comment.create_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
                 })
