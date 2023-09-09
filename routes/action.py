@@ -34,6 +34,20 @@ def get_action():
     user_id = data.get('user_id', 0)  # 如果找不到 'user_id' 键，user_id 将被设置为 0
 
     # 根据 type 和 method 获取相应的内容
-    logger.info("Try to get content, type: {}, method: {},user_id: {}".format(type, method,user_id))
+    logger.info("Try to get content, type: {}, method: {},user_id: {}".format(type, method, user_id))
     result = api_get_action(type, method, book_id, user_id)
+    return result
+
+# 获取collect
+@action.route('/collect/<int:method>/<int:book_id>/<int:user_id>')
+def get_collect(method, book_id, user_id):
+    logger.info("try to get collect ,method is {},book_id is {}, user_id is {} ".format(method, book_id, user_id))
+    result = api_get_action(1, method, book_id, user_id)
+    return result
+
+# 获取rating
+@action.route('/rating/<int:method>/<int:book_id>/<int:user_id>')
+def get_rating(method, book_id, user_id):
+    logger.info("try to get rating,method is {},book_id is {}, user_id is {} ".format(method, book_id, user_id))
+    result = api_get_action(3, method, book_id, user_id)
     return result
