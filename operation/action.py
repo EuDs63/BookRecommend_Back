@@ -33,6 +33,29 @@ class action_operation:
         user_rating = UserRating(user_id=user_id, book_id=book_id, rating=content)
         db.session.add(user_rating)
 
+    def get_user_collect_records(self, method, user_id, book_id, current_page):
+        result = []
+        if method == 2:
+            # 查询用户收藏的书籍、收藏类型和书籍标题
+            user_collect_records = db.session.query(UserCollect, Books) \
+                .join(Books, UserCollect.book_id == Books.book_id) \
+                .filter(UserCollect.user_id == user_id)
+
+            # 按照收藏时间从新到旧的顺序进行排列
+            user_collect_records = user_collect_records.order_by(desc(UserCollect.collect_time))
+            # 进行分页处理，每页5个
+            user_collect_records = user_collect_records.paginate(page=current_page, per_page=5, error_out=False)
+
+            for user_collect, book in user_collect_records:
+                b = book_operation()
+                book_info = Data_Process(book, b.basic_field, 1)
+                result.append({
+                    'book': book_info,
+                    'collect_type': user_collect.collect_type,
+                    'collect_time': user_collect.collect_time.strftime('%Y-%m-%d %H:%M:%S'),  # 格式化时间
+                })
+        return result
+
     def get_user_collect(self, method, user_id, book_id, current_page):
         # 构建结果字典列表
         result = []
@@ -41,13 +64,12 @@ class action_operation:
             user_collect_records = db.session.query(UserCollect, Users) \
                 .join(Users, UserCollect.user_id == Users.user_id) \
                 .filter(UserCollect.book_id == book_id) \
-
+ \
             # 按照收藏时间从新到旧的顺序进行排列
             user_collect_records = user_collect_records.order_by(desc(UserCollect.collect_time))
             # 进行分页处理，每页5个
             user_collect_records = user_collect_records.paginate(page=current_page, per_page=5, error_out=False)
 
-            # user_collect_records = user_collect_records.all()
             for user_collect, user in user_collect_records:
                 result.append({
                     'user_id': user_collect.user_id,
