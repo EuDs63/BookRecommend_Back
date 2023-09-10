@@ -2,3 +2,5 @@ flask~=2.3.3
 flask_sqlalchemy
 pymysql
 Flask-CORS
+flask-bcrypt
+PyJWT

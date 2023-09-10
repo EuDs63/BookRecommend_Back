@@ -1,30 +1,49 @@
-from models.user import Users
+from models.users import Users
 from db_config import db_init as db
+from logger import create_logger
+
+logger = create_logger(__name__)
 
 
 class user_operation:
-    # def all(self):
-    #     execute:select * from users
-    #     data = Users.query.all()
-    #     return  data
-    def __init__(self):
-        self.fields = ['user_id', 'username', 'register_time', 'is_admin']
 
-    def getUserByUsername(self, username):
+    def __init__(self):
+        self.basic_field = ['username', 'register_time','avatar_path']
+        self.detail_field = ['user_id', 'username', 'register_time', 'is_admin', 'avatar_path']
+
+    def get_user_by_username(self, username):
         user = Users.query.filter_by(username=username).first()
         return user
 
+    def get_user_by_userid(self, user_id):
+        user = Users.query.filter_by(user_id=user_id).first()
+        return user
+
     # 添加用户
-    def addUser(self, username, password, register_time):
-        # user = Users(username=username, password=password, register_time=register_time)
+    def add_user(self, username, password, register_time):
         user = Users(username=username, unencrypted_password=password, register_time=register_time)
         db.session.add(user)
         db.session.commit()
         return user
 
-    # 添加管理员
-    def addAdmin(self, username, password, register_time):
-        admin = Users(username=username, unencrypted_password=password, register_time=register_time, is_admin=True)
-        db.session.add(admin)
-        db.session.commit()
-        return admin
+    def change_avatar(self, user_id, avatar_path):
+        try:
+            user = self.get_user_by_userid(user_id)
+            user.avatar_path = avatar_path
+            db.session.commit()
+            return 0
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"更改时发生异常: {e}")
+            return -1
+
+    def operation_change_password(self,user_id,password):
+        try:
+            user = self.get_user_by_userid(user_id)
+            user.unencrypted_password = password
+            db.session.commit()
+            return 0
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"更改时发生异常: {e}")
+            return -1
