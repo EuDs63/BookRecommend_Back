@@ -38,7 +38,7 @@ class action_operation:
         result = []
         if method == 1:  # 根据 book_id 查找收藏该书的用户、以及收藏类型、时间 (user_id 在collect_time将本书添加到了collect_type)
             # 查询收藏了该书的用户、收藏类型和时间，并获取用户名
-            user_collect_records = db.session.query(UserCollect, Users.username) \
+            user_collect_records = db.session.query(UserCollect, Users) \
                 .join(Users, UserCollect.user_id == Users.user_id) \
                 .filter(UserCollect.book_id == book_id) \
 
@@ -48,10 +48,11 @@ class action_operation:
             user_collect_records = user_collect_records.paginate(page=current_page, per_page=5, error_out=False)
 
             # user_collect_records = user_collect_records.all()
-            for user_collect, username in user_collect_records:
+            for user_collect, user in user_collect_records:
                 result.append({
                     'user_id': user_collect.user_id,
-                    'username': username,
+                    'username': user.username,
+                    'avatar_path': user.avatar_path,
                     'collect_type': user_collect.collect_type,
                     'collect_time': user_collect.collect_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
                 })
@@ -71,7 +72,12 @@ class action_operation:
                     'collect_time': user_collect.collect_time.strftime('%Y-%m-%d %H:%M:%S'),  # 格式化时间
                 })
         elif method == 3:  # 根据 book_id 和 user_id 查找收藏内容 (在collect_time,添加到了collect_type
-            user_collect = UserCollect.query.filter_by(user_id=user_id, book_id=book_id).all()
+            user_collect = UserCollect.query.filter_by(user_id=user_id, book_id=book_id)
+
+            # 按照收藏时间从新到旧的顺序进行排列
+            user_collect = user_collect.order_by(desc(UserCollect.collect_time))
+            # 进行分页处理，每页5个
+            user_collect = user_collect.paginate(page=current_page, per_page=5, error_out=False)
             for collect_record in user_collect:
                 result.append({
                     'collect_type': collect_record.collect_type,
