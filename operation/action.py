@@ -9,6 +9,7 @@ from logger import create_logger
 from models.books import Books
 from utils.data_process import Data_Process, Paginate_Process
 from sqlalchemy import desc
+
 logger = create_logger(__name__)
 
 
@@ -32,7 +33,7 @@ class action_operation:
         user_rating = UserRating(user_id=user_id, book_id=book_id, rating=content)
         db.session.add(user_rating)
 
-    def get_user_collect(self, method, user_id, book_id):
+    def get_user_collect(self, method, user_id, book_id,current_page):
         # 构建结果字典列表
         result = []
         if method == 1:  # 根据 book_id 查找收藏该书的用户、以及收藏类型、时间 (user_id 在collect_time将本书添加到了collect_type)
@@ -40,10 +41,13 @@ class action_operation:
             user_collect_records = db.session.query(UserCollect, Users.username) \
                 .join(Users, UserCollect.user_id == Users.user_id) \
                 .filter(UserCollect.book_id == book_id) \
-
+ \
             # 按照收藏时间从新到旧的顺序进行排列
             user_collect_records = user_collect_records.order_by(desc(UserCollect.collect_time))
-            user_collect_records = user_collect_records.all()
+            # 进行分页处理，每页5个
+            user_collect_records = user_collect_records.paginate(page=current_page, per_page=5, error_out=False)
+
+            #user_collect_records = user_collect_records.all()
             for user_collect, username in user_collect_records:
                 result.append({
                     'user_id': user_collect.user_id,
