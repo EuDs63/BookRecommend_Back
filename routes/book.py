@@ -57,13 +57,15 @@ def load_books():
     result = api_load_books(json_file_path)
     return result
 
+
 # 插入一条书的数据到数据库中
-@book.route('insert_book',methods=['POST'])
+@book.route('insert_book', methods=['POST'])
 def insert_book():
     book_info = json.loads(request.data)
     logger.info("try to insert book to database")
     result = api_insert_book(book_info)
     return result
+
 
 # 根据id获取图书信息 根据前端需求的不同，所返回的图书信息包含的内容也应不同
 # type 类型:
@@ -82,6 +84,7 @@ def get_book_info(book_id, info_type):
         result['code'] = -1  # 暂无相关需求
         result['msg'] = "unsupported info_type"
     return result
+
 
 # 上传书籍信息文件
 @book.route('/upload_books', methods=['POST'])
@@ -105,6 +108,7 @@ def upload_book():
         result = api_load_books(json_file_path=save_path)
     return result
 
+
 @book.route('/all', methods=['GET'])
 def get_all_books():
     page = request.args.get('page', 1, type=int)  # 所要查询的页号，默认值为1
@@ -123,7 +127,7 @@ def get_category_books():
     per_page = request.args.get('per_page', 20, type=int)  # 每页显示的书籍数量,默认值为20
     order = request.args.get('order', 0, type=int)  # 显示书籍的顺序
     logger.info("try to get book info which category_id is {},current page is {} ".format(category_id, page))
-    result = api_get_category_book(category_id, page, per_page,order)
+    result = api_get_category_book(category_id, page, per_page, order)
     return result
 
 
