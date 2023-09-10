@@ -16,7 +16,15 @@ class user_operation:
 
     # 添加用户
     def addUser(self, username, password, register_time):
-        user = Users(username=username, password=password, register_time=register_time)
+        # user = Users(username=username, password=password, register_time=register_time)
+        user = Users(username=username, unencrypted_password=password, register_time=register_time)
         db.session.add(user)
         db.session.commit()
         return user
+
+    # 添加管理员
+    def addAdmin(self, username, password, register_time):
+        admin = Users(username=username, unencrypted_password=password, register_time=register_time, is_admin=True)
+        db.session.add(admin)
+        db.session.commit()
+        return admin

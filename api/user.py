@@ -1,3 +1,4 @@
+from models.user import bcrypt
 from operation.user import user_operation
 from logger import create_logger
 from utils.data_process import Data_Process
@@ -12,11 +13,12 @@ def user_login(username, password):
     u = user_operation()
     data = u.getUserByUsername(username)
     if data is not None:
-        if data.password == password:
+        if bcrypt.check_password_hash(data.password, password):  # True
             result['code'] = 0
             result['msg'] = "login success"
             # data 数据处理
             result['user'] = Data_Process(data, u.fields, 1)
+            logger.info("{} login successfully!".format(username))
         else:
             result['code'] = -1
             result['msg'] = "err password"
@@ -26,7 +28,7 @@ def user_login(username, password):
     return result
 
 
-# 注册
+# 用户注册
 def user_register(username, password, register_time):
     result = {}
     u = user_operation()
@@ -40,3 +42,6 @@ def user_register(username, password, register_time):
         result['msg'] = "register success"
         logger.info("{} register successfully!".format(username))
     return result
+
+
+
