@@ -4,3 +4,4 @@ pymysql
 Flask-CORS
 flask-bcrypt
 PyJWT
+numpy

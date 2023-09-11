@@ -82,17 +82,29 @@ class action_operation:
             # 查询用户收藏的书籍、收藏类型和书籍标题
             user_collect_records = db.session.query(UserCollect, Books) \
                 .join(Books, UserCollect.book_id == Books.book_id) \
-                .filter(UserCollect.user_id == user_id) \
-                .all()
+                .filter(UserCollect.user_id == user_id)
+
+            # 按照从新到旧进行排序
+            user_collect_records = user_collect_records.order_by(desc(UserCollect.collect_time))
+
+            # 创建一个集合用于存储已经出现过的 book_id
+            seen_book_ids = set()
+
+            b = book_operation()
 
             for user_collect, book in user_collect_records:
-                b = book_operation()
-                book_info = Data_Process(book, b.search_field, 1)
-                result.append({
-                    'book': book_info,
-                    'collect_type': user_collect.collect_type,
-                    'collect_time': user_collect.collect_time.strftime('%Y-%m-%d %H:%M:%S'),  # 格式化时间
-                })
+                # 进行判断，如果之前已经出现，则不添加
+                # 判断 book_id 是否已经出现过，如果没有则添加到结果列表中
+                if book.book_id not in seen_book_ids:
+                    # 将当前的 book_id 添加到集合中，以便后续判断
+                    seen_book_ids.add(book.book_id)
+                    # 添加到返回数据中
+                    book_info = Data_Process(book, b.search_field, 1)
+                    result.append({
+                        'book': book_info,
+                        'collect_type': user_collect.collect_type,
+                        'collect_time': user_collect.collect_time.strftime('%Y-%m-%d %H:%M:%S'),  # 格式化时间
+                    })
         elif method == 3:  # 根据 book_id 和 user_id 查找收藏内容 (在collect_time,添加到了collect_type
             user_collect = UserCollect.query.filter_by(user_id=user_id, book_id=book_id)
 

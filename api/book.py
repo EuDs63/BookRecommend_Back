@@ -129,7 +129,7 @@ def api_edit_info(book_id, edit_info):
         result['msg'] = "fail"
     return result
 
-
+# 训练
 def api_train():
     result = {}
     b = book_operation()
@@ -141,7 +141,7 @@ def api_train():
         result['msg'] = "fail"
     return result
 
-
+# 获得推荐
 def api_get_recommend(user_id):
     result = {}
     b = book_operation()
