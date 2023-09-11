@@ -16,6 +16,7 @@ def api_load_books(json_file_path):
     result['msg'] = "计划导入{}本书,成功导入{}本书到数据库".format(books_count, success_count)
     return result
 
+
 def api_insert_book(book_info):
     result = {}
     b = book_operation()
@@ -84,7 +85,7 @@ def api_get_all_books(current_page, per_page):
 def api_get_category_book(category_id, current_page, per_page, order):
     b = book_operation()
     # 进行分页查询
-    books_pagination = b.return_category_book_infos(category_id, current_page, per_page,order)
+    books_pagination = b.return_category_book_infos(category_id, current_page, per_page, order)
     # 对得到的分页查询进行处理
     result = Paginate_Process(books_pagination, current_page, b.basic_field)
     result['category_id'] = category_id
@@ -121,6 +122,30 @@ def api_edit_info(book_id, edit_info):
     result = {}
     b = book_operation()
     if b.edit_info(book_id, edit_info) == 0:
+        result['code'] = 0
+        result['msg'] = "success"
+    else:
+        result['code'] = -1
+        result['msg'] = "fail"
+    return result
+
+
+def api_train():
+    result = {}
+    b = book_operation()
+    if b.ItemSimilarity() == 0:
+        result['code'] = 0
+        result['msg'] = "success"
+    else:
+        result['code'] = -1
+        result['msg'] = "fail"
+    return result
+
+
+def api_get_recommend(user_id):
+    result = {}
+    b = book_operation()
+    if b.Recommendation(user_id) == 0:
         result['code'] = 0
         result['msg'] = "success"
     else:
