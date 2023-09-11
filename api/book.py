@@ -145,9 +145,13 @@ def api_train():
 def api_get_recommend(user_id):
     result = {}
     b = book_operation()
+<<<<<<< HEAD
     book_data = b.Recommendation(user_id)
     if book_data != 0:
         result['book_id'] = list(book_data.keys())
+=======
+    if b.Recommendation(user_id) != 0:
+>>>>>>> 707d49eb64e7523abcd9b79d753db4925510f830
         result['code'] = 0
         result['msg'] = "success"
     else:
