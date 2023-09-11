@@ -67,3 +67,8 @@ def api_get_collect(method, book_id, user_id, current_page):
 #     a = action_operation()
 #     result = a.get_user_collect(method=method, user_id=user_id, book_id=book_id, current_page=current_page)
 #     return result
+
+def api_get_comment(method, book_id, user_id, current_page):
+    a = action_operation()
+    result = a.get_user_comment_record(method=method, user_id=user_id, book_id=book_id, current_page=current_page)
+    return result

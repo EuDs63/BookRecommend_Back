@@ -63,8 +63,8 @@ class action_operation:
             # 查询收藏了该书的用户、收藏类型和时间，并获取用户名
             user_collect_records = db.session.query(UserCollect, Users) \
                 .join(Users, UserCollect.user_id == Users.user_id) \
-                .filter(UserCollect.book_id == book_id) \
- \
+                .filter(UserCollect.book_id == book_id)
+
             # 按照收藏时间从新到旧的顺序进行排列
             user_collect_records = user_collect_records.order_by(desc(UserCollect.collect_time))
             # 进行分页处理，每页5个
@@ -158,6 +158,30 @@ class action_operation:
         else:  # 处理无效的 method 参数
             logger.error("无效的 method 参数: {}".format(method))
 
+        return result
+
+    def get_user_comment_record(self,method, book_id, user_id, current_page):
+        result = []
+        if method == 1:
+            pass
+        elif method == 2:
+            user_comment_records = db.session.query(UserComment, Books.title, Books.cover_image_url) \
+                .join(Books, UserComment.book_id == Books.book_id) \
+                .filter(UserComment.user_id == user_id)
+
+            # 按照收藏时间从新到旧的顺序进行排列
+            user_comment_records = user_comment_records.order_by(desc(UserComment.create_time))
+            # 进行分页处理，每页5个
+            user_comment_records = user_comment_records.paginate(page=current_page, per_page=5, error_out=False)
+
+            for user_comment, title, cover_image_url in user_comment_records:
+                result.append({
+                    'book_id': user_comment.book_id,
+                    'title': title,
+                    'cover_image_url': cover_image_url,
+                    'content': user_comment.content,
+                    'create_time': user_comment.create_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
+                })
         return result
 
     def get_user_rating(self, method, user_id, book_id):

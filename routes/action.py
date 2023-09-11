@@ -57,3 +57,13 @@ def get_rating(method, book_id, user_id):
                                                                                                  user_id, current_page))
     result = api_get_action(3, method, book_id, user_id, current_page)
     return result
+
+# 获取comment
+@action.route('/comment/<int:method>/<int:book_id>/<int:user_id>')
+def get_comment(method, book_id, user_id):
+    current_page = int(request.args.get('current_page', 1))
+    logger.info(
+        "try to get comment,method is {},book_id is {}, user_id is {},current_page is {} ".format(method, book_id,
+                                                                                                  user_id, current_page))
+    result = api_get_comment(method, book_id, user_id, current_page)
+    return result
