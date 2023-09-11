@@ -55,7 +55,10 @@ def get_rating(method, book_id, user_id):
     logger.info(
         "try to get rating,method is {},book_id is {}, user_id is {},current_page is {} ".format(method, book_id,
                                                                                                  user_id, current_page))
-    result = api_get_action(3, method, book_id, user_id, current_page)
+    if method == 2:
+        result = api_get_rating_record(method, book_id, user_id, current_page)
+    else:
+        result = api_get_action(3, method, book_id, user_id, current_page)
     return result
 
 # 获取comment
@@ -65,5 +68,5 @@ def get_comment(method, book_id, user_id):
     logger.info(
         "try to get comment,method is {},book_id is {}, user_id is {},current_page is {} ".format(method, book_id,
                                                                                                   user_id, current_page))
-    result = api_get_comment(method, book_id, user_id, current_page)
+    result = api_get_comment_record(method, book_id, user_id, current_page)
     return result

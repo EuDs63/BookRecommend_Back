@@ -223,3 +223,26 @@ class action_operation:
         else:  # 处理无效的 method 参数
             logger.error("无效的 method 参数: {}".format(method))
         return result
+
+    def get_user_rating_rocord(self,method, user_id, book_id, current_page):
+        result = []
+        if method == 1:
+            pass
+        elif method == 2:
+            user_rating_records = db.session.query(UserRating, Books.title) \
+                .join(Books, UserRating.book_id == Books.book_id) \
+                .filter(UserRating.user_id == user_id)
+
+            # 从新到旧排列
+            user_rating_records = user_rating_records.order_by(desc(UserRating.rating_time))
+            # 进行分页处理，每页5个
+            user_rating_records = user_rating_records.paginate(page=current_page, per_page=5, error_out=False)
+
+            for user_rating, title in user_rating_records:
+                result.append({
+                    'book_id': user_rating.user_id,
+                    'title': title,
+                    'rating': user_rating.rating,
+                    'rating_time': user_rating.rating_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
+                })
+        return result

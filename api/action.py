@@ -54,7 +54,6 @@ def api_get_action(type, method, book_id, user_id, current_page):
 
     return result
 
-
 def api_get_collect(method, book_id, user_id, current_page):
     a = action_operation()
     if method == 2: # 先这样凑合着
@@ -68,7 +67,13 @@ def api_get_collect(method, book_id, user_id, current_page):
 #     result = a.get_user_collect(method=method, user_id=user_id, book_id=book_id, current_page=current_page)
 #     return result
 
-def api_get_comment(method, book_id, user_id, current_page):
+def api_get_comment_record(method, book_id, user_id, current_page):
     a = action_operation()
     result = a.get_user_comment_record(method=method, user_id=user_id, book_id=book_id, current_page=current_page)
+    return result
+
+# 获取评分记录
+def api_get_rating_record(method, book_id, user_id, current_page):
+    a = action_operation()
+    result = a.get_user_rating_rocord(method=method, user_id=user_id, book_id=book_id, current_page=current_page)
     return result
