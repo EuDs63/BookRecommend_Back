@@ -150,10 +150,14 @@ def api_train():
 def api_get_recommend(user_id):
     result = {}
     b = book_operation()
-
     book_data = b.Recommendation(user_id)
+    result['books'] = []
     if book_data != 0:
         result['book_id'] = list(book_data.keys())
+        for book_id in list(book_data.keys()):
+            data = b.get_book_by_id(book_id)
+            book = Data_Process(data, b.detail_field, 1)
+            result["books"].append(book)
         result['code'] = 0
         result['msg'] = "success"
     else:
