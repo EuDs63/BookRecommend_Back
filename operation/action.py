@@ -33,7 +33,7 @@ class action_operation:
         user_rating = UserRating(user_id=user_id, book_id=book_id, rating=content)
         db.session.add(user_rating)
 
-    def get_user_collect_records(self, method, user_id, book_id, current_page,page_size):
+    def get_user_collect_records(self, method, user_id, book_id, current_page, page_size):
         result = []
         if method == 2:
             # 查询用户收藏的书籍、收藏类型和书籍标题
@@ -55,6 +55,36 @@ class action_operation:
                     'collect_time': user_collect.collect_time.strftime('%Y-%m-%d %H:%M:%S'),  # 格式化时间
                 })
         return result
+
+    # 获取收藏同本书的人的信息
+    def get_collect_members(self, book_id):
+        members = []
+        # 查询收藏了该书的用户、收藏类型和时间，并获取用户名
+        user_collect_records = db.session.query(UserCollect, Users) \
+            .join(Users, UserCollect.user_id == Users.user_id) \
+            .filter(UserCollect.book_id == book_id)
+
+        # 按照收藏时间从新到旧的顺序进行排列
+        user_collect_records = user_collect_records.order_by(desc(UserCollect.collect_time))
+
+        # 创建一个集合用于存储已经出现过的 book_id
+        seen_user_ids = set()
+
+        for user_collect, user in user_collect_records:
+            if user is not None:
+                # 进行判断，如果之前已经出现，则不添加
+                # 判断 user_id 是否已经出现过，如果没有则添加到结果列表中
+                if user.user_id not in seen_user_ids:
+                    seen_user_ids.add(user.user_id)
+                    members.append({
+                        'img': user.avatar_path,
+                        'username': user.username
+                    })
+            # 当 members 的长度达到 4 时，停止添加
+            if len(members) >= 4:
+                break
+
+        return members
 
     def get_user_collect(self, method, user_id, book_id, current_page):
         # 构建结果字典列表
@@ -172,7 +202,7 @@ class action_operation:
 
         return result
 
-    def get_user_comment_record(self,method, book_id, user_id, current_page,page_size):
+    def get_user_comment_record(self, method, book_id, user_id, current_page, page_size):
         result = []
         if method == 1:
             pass
@@ -236,7 +266,7 @@ class action_operation:
             logger.error("无效的 method 参数: {}".format(method))
         return result
 
-    def get_user_rating_rocord(self,method, user_id, book_id, current_page,page_size):
+    def get_user_rating_rocord(self, method, user_id, book_id, current_page, page_size):
         result = []
         if method == 1:
             pass
@@ -252,7 +282,7 @@ class action_operation:
 
             for user_rating, book in user_rating_records:
                 result.append({
-                    'book_id': user_rating.user_id,
+                    'book_id': book.book_id,
                     'title': book.title,
                     'cover_image_url': book.cover_image_url,
                     'rating': user_rating.rating,

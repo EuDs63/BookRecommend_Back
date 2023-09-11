@@ -180,3 +180,10 @@ def getrec():
     user_id = data['user_id']
     result = api_get_recommend(user_id)
     return result
+
+# 根据book_id获得相关推荐
+@book.route('/recommendationByBookId/<int:book_id>',methods=['GET'])
+def recommendation_by_book_id(book_id):
+    logger.info('try to get recommended book by book_id');
+    result = api_recommendation_by_book_id(book_id)
+    return result

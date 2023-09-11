@@ -1,4 +1,7 @@
+import random
+
 from operation.book import book_operation
+from operation.action import action_operation
 from logger import create_logger
 from utils.data_process import Data_Process, Paginate_Process
 
@@ -129,6 +132,7 @@ def api_edit_info(book_id, edit_info):
         result['msg'] = "fail"
     return result
 
+
 # 训练
 def api_train():
     result = {}
@@ -141,7 +145,7 @@ def api_train():
         result['msg'] = "fail"
     return result
 
-# 获得推荐
+
 # 获得推荐
 def api_get_recommend(user_id):
     result = {}
@@ -155,4 +159,32 @@ def api_get_recommend(user_id):
     else:
         result['code'] = -1
         result['msg'] = "fail"
+    return result
+
+
+def generate_random_values_around(target_integer, num_values, range_size):
+    values = []
+
+    for _ in range(num_values):
+        while True:
+            value = random.randint(target_integer - range_size, target_integer + range_size)
+            if 1 <= value <= 1900 and value != target_integer:
+                values.append(value)
+                break
+
+    return values
+
+
+# 根据book_id获得相关推荐
+def api_recommendation_by_book_id(book_id):
+    values = generate_random_values_around(book_id, 6, 20)
+    b = book_operation()
+    a = action_operation()
+    result = []
+    for value in values:
+        book = b.get_book_by_id(value)
+        book_info = Data_Process(book, b.basic_field, 1)
+        members = a.get_collect_members(book.book_id)
+        book_info["members"] = members
+        result.append(book_info)
     return result
