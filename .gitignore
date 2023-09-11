@@ -11,3 +11,21 @@ config.py
 /dataSources.local.xml
 
 *.pyc
+
+.img
+.json
+/static/book/books_1694074281.json
+/static/book/books_1694074463.json
+/static/book/books_1694074702.json
+/static/book/books_1694074715.json
+/static/book/books_1694075280.json
+/static/book/books_1694075289.json
+/static/avatar/user_1_1693895910.jpg
+/static/avatar/user_1_1694141039.jpg
+/static/avatar/user_1_1694144122.jpg
+/static/avatar/user_1_1694144154.png
+/static/avatar/user_1_1694144175.png
+/static/avatar/user_1_1694144257.png
+/static/avatar/user_1_1694144510.jpg
+/static/avatar/user_1_1694145015.jpg
+/static/avatar/user_1_1694145103.jpg
