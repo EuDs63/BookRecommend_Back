@@ -9,7 +9,6 @@ config.py
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-**/__pycache__
 
 *.pyc
 
@@ -31,3 +30,6 @@ config.py
 /static/avatar/user_1_1694145015.jpg
 /static/avatar/user_1_1694145103.jpg
 __pycache__
+
+similarity_matrix.pkl
+ routes/__pycache__

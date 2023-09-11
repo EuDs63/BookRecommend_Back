@@ -145,13 +145,37 @@ def api_train():
 def api_get_recommend(user_id):
     result = {}
     b = book_operation()
-
     book_data = b.Recommendation(user_id)
+    result['books'] = []
     if book_data != 0:
         result['book_id'] = list(book_data.keys())
+        for book_id in list(book_data.keys()):
+            data = b.get_book_by_id(book_id)
+            book = Data_Process(data, b.detail_field, 1)
+            result["books"].append(book)
         result['code'] = 0
         result['msg'] = "success"
     else:
         result['code'] = -1
         result['msg'] = "fail"
     return result
+
+# def get_detail_book_info(book_id):
+#     result = {}
+#     b = book_operation()
+#     data = b.get_book_by_id(book_id)
+#     if data is not None:
+#         book = Data_Process(data, b.detail_field, 1)
+#         category = b.get_category_by_book_id(book_id)
+#         tag = b.get_tags_by_book_id(book_id)
+#         book["category"] = category
+#         book["tag"] = tag
+#         result['book'] = book
+#         result['code'] = 0
+#         result['msg'] = "success"
+#         logger.info("get book detail info successfully ,book_id is {}".format(book_id))
+#     else:
+#         result['code'] = -1  # 获取失败
+#         result['msg'] = "can not find such book"
+#         logger.info("fail to get book detail info ,book_id is {}".format(book_id))
+#     return result
