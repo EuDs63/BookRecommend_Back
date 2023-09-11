@@ -229,7 +229,7 @@ class action_operation:
         if method == 1:
             pass
         elif method == 2:
-            user_rating_records = db.session.query(UserRating, Books.title) \
+            user_rating_records = db.session.query(UserRating, Books) \
                 .join(Books, UserRating.book_id == Books.book_id) \
                 .filter(UserRating.user_id == user_id)
 
@@ -238,10 +238,11 @@ class action_operation:
             # 进行分页处理，每页5个
             user_rating_records = user_rating_records.paginate(page=current_page, per_page=5, error_out=False)
 
-            for user_rating, title in user_rating_records:
+            for user_rating, book in user_rating_records:
                 result.append({
                     'book_id': user_rating.user_id,
-                    'title': title,
+                    'title': book.title,
+                    'cover_image_url': book.cover_image_url,
                     'rating': user_rating.rating,
                     'rating_time': user_rating.rating_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
                 })
