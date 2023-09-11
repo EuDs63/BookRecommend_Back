@@ -33,7 +33,7 @@ class action_operation:
         user_rating = UserRating(user_id=user_id, book_id=book_id, rating=content)
         db.session.add(user_rating)
 
-    def get_user_collect_records(self, method, user_id, book_id, current_page):
+    def get_user_collect_records(self, method, user_id, book_id, current_page,page_size):
         result = []
         if method == 2:
             # 查询用户收藏的书籍、收藏类型和书籍标题
@@ -44,7 +44,7 @@ class action_operation:
             # 按照收藏时间从新到旧的顺序进行排列
             user_collect_records = user_collect_records.order_by(desc(UserCollect.collect_time))
             # 进行分页处理，每页5个
-            user_collect_records = user_collect_records.paginate(page=current_page, per_page=5, error_out=False)
+            user_collect_records = user_collect_records.paginate(page=current_page, per_page=page_size, error_out=False)
 
             for user_collect, book in user_collect_records:
                 b = book_operation()
@@ -160,7 +160,7 @@ class action_operation:
 
         return result
 
-    def get_user_comment_record(self,method, book_id, user_id, current_page):
+    def get_user_comment_record(self,method, book_id, user_id, current_page,page_size):
         result = []
         if method == 1:
             pass
@@ -172,7 +172,7 @@ class action_operation:
             # 按照收藏时间从新到旧的顺序进行排列
             user_comment_records = user_comment_records.order_by(desc(UserComment.create_time))
             # 进行分页处理，每页5个
-            user_comment_records = user_comment_records.paginate(page=current_page, per_page=5, error_out=False)
+            user_comment_records = user_comment_records.paginate(page=current_page, per_page=page_size, error_out=False)
 
             for user_comment, title, cover_image_url in user_comment_records:
                 result.append({
@@ -224,7 +224,7 @@ class action_operation:
             logger.error("无效的 method 参数: {}".format(method))
         return result
 
-    def get_user_rating_rocord(self,method, user_id, book_id, current_page):
+    def get_user_rating_rocord(self,method, user_id, book_id, current_page,page_size):
         result = []
         if method == 1:
             pass
@@ -236,7 +236,7 @@ class action_operation:
             # 从新到旧排列
             user_rating_records = user_rating_records.order_by(desc(UserRating.rating_time))
             # 进行分页处理，每页5个
-            user_rating_records = user_rating_records.paginate(page=current_page, per_page=5, error_out=False)
+            user_rating_records = user_rating_records.paginate(page=current_page, per_page=page_size, error_out=False)
 
             for user_rating, book in user_rating_records:
                 result.append({
