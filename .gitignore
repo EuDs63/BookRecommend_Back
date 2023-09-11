@@ -30,3 +30,6 @@ config.py
 /static/avatar/user_1_1694145015.jpg
 /static/avatar/user_1_1694145103.jpg
 __pycache__
+
+similarity_matrix.pkl
+ routes/__pycache__
