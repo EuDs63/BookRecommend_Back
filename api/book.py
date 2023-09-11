@@ -142,10 +142,14 @@ def api_train():
     return result
 
 # 获得推荐
+# 获得推荐
 def api_get_recommend(user_id):
     result = {}
     b = book_operation()
-    if b.Recommendation(user_id) != 0:
+
+    book_data = b.Recommendation(user_id)
+    if book_data != 0:
+        result['book_id'] = list(book_data.keys())
         result['code'] = 0
         result['msg'] = "success"
     else:
