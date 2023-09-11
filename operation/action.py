@@ -78,7 +78,7 @@ class action_operation:
                     seen_user_ids.add(user.user_id)
                     members.append({
                         'img': user.avatar_path,
-                        'username': user.username
+                        'name': user.username
                     })
             # 当 members 的长度达到 4 时，停止添加
             if len(members) >= 4:
