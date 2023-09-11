@@ -166,4 +166,17 @@ def edit():
     edit_info = data['edit_info']
     result = api_edit_info(book_id, edit_info)
     return result
->>>>>>> 72cde14763c7db64cc0ac872dec64028db560736
+
+
+@book.route('/train', methods=['POST'])
+def train():
+    result = api_train()
+    return result
+
+
+@book.route('/getrec', methods=['POST'])
+def getrec():
+    data = json.loads(request.data)
+    user_id = data['user_id']
+    result = api_get_recommend(user_id)
+    return result

@@ -1,10 +1,15 @@
-from sqlalchemy import desc
+import pickle
 
+import numpy as np
+from sqlalchemy import desc
+from models.user_collect import UserCollect
+from models.user_comment import UserComment
 from models.books import Books
 from models.categories import Category
 from models.book_categories import BookCategory
 from models.tags import Tag
 from models.book_tags import BookTag
+from models.user_rating import UserRating
 from db_config import db_init as db
 import json
 from logger import create_logger
@@ -159,7 +164,7 @@ class book_operation:
 
         return books_count, success_count
 
-    def insert_book_to_database(self,book_info):
+    def insert_book_to_database(self, book_info):
         book_id = 0
         try:
             book_id = self.insert_data_into_books(book_info)  # 插入数据到books
@@ -198,7 +203,7 @@ class book_operation:
         return books_pagination
 
     # 分页返回特定category的所有书籍信息
-    def return_category_book_infos(self, category_id, current_page, per_page,order):
+    def return_category_book_infos(self, category_id, current_page, per_page, order):
         books = self.get_book_by_category_id(category_id)
         if order == 1:
             books = books.order_by(desc(Books.publish_date))
@@ -236,3 +241,108 @@ class book_operation:
             return 0
         else:
             return -1
+
+    def get_alluserbook(self):
+        result = {}
+        user_rating_records = db.session.query(UserRating) \
+            .all()
+        for user_rating in user_rating_records:
+            user_id = user_rating.user_id
+            book_id = user_rating.book_id
+            if user_id not in result:
+                result[user_id] = set()  # 使用集合来存储每个用户的book_id，以避免重复
+            result[user_id].add(book_id)
+        return result
+
+    def getBookRating(self, book_id, user_id):
+        user_rating = UserRating.query.filter_by(user_id=user_id, book_id=book_id).all()
+        for collect_record in user_rating:
+            return collect_record.rating,
+
+    def isbookcollected(self, book_id, user_id):
+        user_collect = UserCollect.query.filter_by(user_id=user_id, book_id=book_id).first()
+        if user_collect:
+            return 1  # 如果存在记录，则返回1
+        else:
+            return 0  # 如果不存在记录，则返回0
+
+    def isBookHavingComments(self, book_id, user_id):
+        user_comment = UserComment.query.filter_by(user_id=user_id, book_id=book_id).first()
+        if user_comment:
+            return 1  # 如果存在记录，则返回1
+        else:
+            return 0  # 如果不存在记录，则返回0
+
+    def generateBookRating(self):
+        user_book_ratings = {}  # 最终的用户-图书评分数据结构
+        for user_id, rated_books in self.get_alluserbook().items():
+            user_rating_dict = {}  # 每个用户的评分字典
+            for book_id in rated_books:
+                rating_score = 0
+                # 获取图书评分和其他信息
+                rating = self.getBookRating(book_id, user_id)
+                is_book_collected = self.isbookcollected(book_id, user_id)
+                is_book_having_comments = self.isBookHavingComments(book_id, user_id)
+                # 根据评分和其他信息计算评分分数
+                if rating[0] == 8.0:
+                    rating_score += 2
+                elif rating[0] == 6.0:
+                    rating_score += 1
+                elif rating[0] == 9.9:
+                    rating_score += 3
+                elif rating[0] == 4.0:
+                    rating_score -= 1
+                else:
+                    rating_score -= 2
+                if is_book_collected:
+                    rating_score += 1
+                if is_book_having_comments:
+                    rating_score += 2
+                # 将每本书籍及其评分分数添加到用户的评分字典中
+                user_rating_dict[book_id] = rating_score
+            # 将用户的评分字典添加到用户-图书评分数据结构中
+            user_book_ratings[user_id] = user_rating_dict
+        print(user_book_ratings)
+        return user_book_ratings
+
+    def ItemSimilarity(self):
+        N = {}  # 初始化N字典,记录每个物品被反馈过的用户数
+        C = {}  # 初始化C字典,记录共同喜欢两个物品的用户数
+        for u, items in self.generateBookRating().items():
+            for i in items:
+                N.setdefault(i, 0)
+                N[i] += 1
+                for j in items:
+                    if i == j:
+                        continue
+                    C.setdefault(i, {})
+                    C[i].setdefault(j, 0)
+                    C[i][j] += 1
+                    print("正在收集数据")
+        W = {}  # 计算物品 i 和 j 的相似度矩阵
+        for i, related_items in C.items():
+            W.setdefault(i, {})
+            for j, cij in related_items.items():
+                W[i][j] = cij / np.sqrt(N[i] * N[j])
+                print("正在计算")
+        # 保存相似度矩阵到文件
+        with open('similarity_matrix.pkl', 'wb') as file:
+            pickle.dump(W, file)
+        return W
+
+    def Recommendation(self, user_id):
+        rank_rs = {}
+        u_items = self.generateBookRating()[user_id]
+        print(u_items)
+        with open('similarity_matrix.pkl', 'rb') as file:
+            W = pickle.load(file)
+        for i, rui in u_items.items():
+            print(i,rui)
+            for j, wij in sorted(W[i].items(), key=lambda x: x[1], reverse=True)[0:10]:
+                if j in u_items:
+                    continue
+                rank_rs.setdefault(j, 0)
+                rank_rs[j] += rui * wij
+        top_k_recommendations = dict(sorted(rank_rs.items(), key=lambda x: x[1], reverse=True)[:10])
+        print(top_k_recommendations)
+        return top_k_recommendations  # 键为bookId,值为bookRating的字典
