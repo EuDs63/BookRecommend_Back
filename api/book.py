@@ -129,11 +129,11 @@ def api_edit_info(book_id, edit_info):
         result['msg'] = "fail"
     return result
 
-
+# 训练
 def api_train():
     result = {}
     b = book_operation()
-    if b.ItemSimilarity() == 0:
+    if b.ItemSimilarity() != 0:
         result['code'] = 0
         result['msg'] = "success"
     else:
@@ -141,11 +141,11 @@ def api_train():
         result['msg'] = "fail"
     return result
 
-
+# 获得推荐
 def api_get_recommend(user_id):
     result = {}
     b = book_operation()
-    if b.Recommendation(user_id) == 0:
+    if b.Recommendation(user_id) != 0:
         result['code'] = 0
         result['msg'] = "success"
     else:
