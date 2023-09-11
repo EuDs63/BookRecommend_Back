@@ -33,25 +33,48 @@ class action_operation:
         user_rating = UserRating(user_id=user_id, book_id=book_id, rating=content)
         db.session.add(user_rating)
 
-    def get_user_collect(self, method, user_id, book_id,current_page):
+    def get_user_collect_records(self, method, user_id, book_id, current_page,page_size):
+        result = []
+        if method == 2:
+            # 查询用户收藏的书籍、收藏类型和书籍标题
+            user_collect_records = db.session.query(UserCollect, Books) \
+                .join(Books, UserCollect.book_id == Books.book_id) \
+                .filter(UserCollect.user_id == user_id)
+
+            # 按照收藏时间从新到旧的顺序进行排列
+            user_collect_records = user_collect_records.order_by(desc(UserCollect.collect_time))
+            # 进行分页处理，每页5个
+            user_collect_records = user_collect_records.paginate(page=current_page, per_page=page_size, error_out=False)
+
+            for user_collect, book in user_collect_records:
+                b = book_operation()
+                book_info = Data_Process(book, b.basic_field, 1)
+                result.append({
+                    'book': book_info,
+                    'collect_type': user_collect.collect_type,
+                    'collect_time': user_collect.collect_time.strftime('%Y-%m-%d %H:%M:%S'),  # 格式化时间
+                })
+        return result
+
+    def get_user_collect(self, method, user_id, book_id, current_page):
         # 构建结果字典列表
         result = []
         if method == 1:  # 根据 book_id 查找收藏该书的用户、以及收藏类型、时间 (user_id 在collect_time将本书添加到了collect_type)
             # 查询收藏了该书的用户、收藏类型和时间，并获取用户名
-            user_collect_records = db.session.query(UserCollect, Users.username) \
+            user_collect_records = db.session.query(UserCollect, Users) \
                 .join(Users, UserCollect.user_id == Users.user_id) \
-                .filter(UserCollect.book_id == book_id) \
- \
+                .filter(UserCollect.book_id == book_id)
+
             # 按照收藏时间从新到旧的顺序进行排列
             user_collect_records = user_collect_records.order_by(desc(UserCollect.collect_time))
             # 进行分页处理，每页5个
             user_collect_records = user_collect_records.paginate(page=current_page, per_page=5, error_out=False)
 
-            #user_collect_records = user_collect_records.all()
-            for user_collect, username in user_collect_records:
+            for user_collect, user in user_collect_records:
                 result.append({
                     'user_id': user_collect.user_id,
-                    'username': username,
+                    'username': user.username,
+                    'avatar_path': user.avatar_path,
                     'collect_type': user_collect.collect_type,
                     'collect_time': user_collect.collect_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
                 })
@@ -71,7 +94,12 @@ class action_operation:
                     'collect_time': user_collect.collect_time.strftime('%Y-%m-%d %H:%M:%S'),  # 格式化时间
                 })
         elif method == 3:  # 根据 book_id 和 user_id 查找收藏内容 (在collect_time,添加到了collect_type
-            user_collect = UserCollect.query.filter_by(user_id=user_id, book_id=book_id).all()
+            user_collect = UserCollect.query.filter_by(user_id=user_id, book_id=book_id)
+
+            # 按照收藏时间从新到旧的顺序进行排列
+            user_collect = user_collect.order_by(desc(UserCollect.collect_time))
+            # 进行分页处理，每页5个
+            user_collect = user_collect.paginate(page=current_page, per_page=5, error_out=False)
             for collect_record in user_collect:
                 result.append({
                     'collect_type': collect_record.collect_type,
@@ -132,6 +160,30 @@ class action_operation:
 
         return result
 
+    def get_user_comment_record(self,method, book_id, user_id, current_page,page_size):
+        result = []
+        if method == 1:
+            pass
+        elif method == 2:
+            user_comment_records = db.session.query(UserComment, Books.title, Books.cover_image_url) \
+                .join(Books, UserComment.book_id == Books.book_id) \
+                .filter(UserComment.user_id == user_id)
+
+            # 按照收藏时间从新到旧的顺序进行排列
+            user_comment_records = user_comment_records.order_by(desc(UserComment.create_time))
+            # 进行分页处理，每页5个
+            user_comment_records = user_comment_records.paginate(page=current_page, per_page=page_size, error_out=False)
+
+            for user_comment, title, cover_image_url in user_comment_records:
+                result.append({
+                    'book_id': user_comment.book_id,
+                    'title': title,
+                    'cover_image_url': cover_image_url,
+                    'content': user_comment.content,
+                    'create_time': user_comment.create_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
+                })
+        return result
+
     def get_user_rating(self, method, user_id, book_id):
         # 构建结果字典列表
         result = []
@@ -170,4 +222,28 @@ class action_operation:
                 })
         else:  # 处理无效的 method 参数
             logger.error("无效的 method 参数: {}".format(method))
+        return result
+
+    def get_user_rating_rocord(self,method, user_id, book_id, current_page,page_size):
+        result = []
+        if method == 1:
+            pass
+        elif method == 2:
+            user_rating_records = db.session.query(UserRating, Books) \
+                .join(Books, UserRating.book_id == Books.book_id) \
+                .filter(UserRating.user_id == user_id)
+
+            # 从新到旧排列
+            user_rating_records = user_rating_records.order_by(desc(UserRating.rating_time))
+            # 进行分页处理，每页5个
+            user_rating_records = user_rating_records.paginate(page=current_page, per_page=page_size, error_out=False)
+
+            for user_rating, book in user_rating_records:
+                result.append({
+                    'book_id': user_rating.user_id,
+                    'title': book.title,
+                    'cover_image_url': book.cover_image_url,
+                    'rating': user_rating.rating,
+                    'rating_time': user_rating.rating_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
+                })
         return result
