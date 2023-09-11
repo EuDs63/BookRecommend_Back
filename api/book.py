@@ -133,7 +133,7 @@ def api_edit_info(book_id, edit_info):
 def api_train():
     result = {}
     b = book_operation()
-    if b.ItemSimilarity() == 0:
+    if b.ItemSimilarity() != 0:
         result['code'] = 0
         result['msg'] = "success"
     else:
@@ -145,7 +145,9 @@ def api_train():
 def api_get_recommend(user_id):
     result = {}
     b = book_operation()
-    if b.Recommendation(user_id) == 0:
+    book_data = b.Recommendation(user_id)
+    if book_data != 0:
+        result['book_id'] = list(book_data.keys())
         result['code'] = 0
         result['msg'] = "success"
     else:
