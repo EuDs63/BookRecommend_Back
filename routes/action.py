@@ -18,10 +18,15 @@ def add_action():
     user_id = data['user_id']
     book_id = data['book_id']
     content = data['content']
+    # 检查是否存在 article_title，如果不存在则设置为默认值 null
+    if 'article_title' not in data:
+        article_title = None
+    else:
+        article_title = data['article_title']
     # 根据type来区分不同的action:
     # 1：collect; 2：comment 3: rating 4: article
     logger.info("user {} try to add action , type is {}".format(user_id, type))
-    result = api_add_action(type, user_id, book_id, content)
+    result = api_add_action(type, user_id, book_id, content,article_title)
     return result
 
 

@@ -16,7 +16,7 @@ logger = create_logger(__name__)
 
 class action_operation:
     def __init__(self):
-        self.action_type = ['user_collect', 'user_comment', 'user_rating','user_article']
+        self.action_type = ['user_collect', 'user_comment', 'user_rating', 'user_article']
 
     def add_user_collect(self, user_id, book_id, content):
         user_collect = UserCollect(user_id=user_id, book_id=book_id, collect_type=content)
@@ -34,8 +34,8 @@ class action_operation:
         user_rating = UserRating(user_id=user_id, book_id=book_id, rating=content)
         db.session.add(user_rating)
 
-    def add_user_article(self, user_id, book_id, content):
-        user_article = UserArticle(user_id=user_id, book_id=book_id, content=content)
+    def add_user_article(self, user_id, book_id, content, article_title):
+        user_article = UserArticle(user_id=user_id, book_id=book_id, content=content, article_title=article_title)
         db.session.add(user_article)
 
     def get_user_collect_records(self, method, user_id, book_id, current_page, page_size):
@@ -298,7 +298,24 @@ class action_operation:
     def get_user_article_rocord(self, method, user_id, book_id, current_page, page_size):
         result = []
         if method == 1:
-            pass
+            user_article_records = db.session.query(UserArticle, Users) \
+                .join(Users, UserArticle.user_id == Books.user_id) \
+                .filter(UserArticle.book_id == book_id)
+
+            # 从新到旧排列
+            user_article_records = user_article_records.order_by(desc(UserArticle.create_time))
+            # 进行分页处理，每页5个
+            user_article_records = user_article_records.paginate(page=current_page, per_page=page_size, error_out=False)
+
+            for user_article, user in user_article_records:
+                result.append({
+                    'user_id': user.user_id,
+                    'article_title': user_article.article_title,
+                    'avatar_path': user.avatar_path,
+                    'content': user_article.content,
+                    'create_time': user_article.create_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
+                })
+        # 根据user_id查找
         elif method == 2:
             user_article_records = db.session.query(UserArticle, Books) \
                 .join(Books, UserArticle.book_id == Books.book_id) \
@@ -313,8 +330,9 @@ class action_operation:
                 result.append({
                     'book_id': book.book_id,
                     'title': book.title,
+                    'article_title': user_article.article_title,
                     'cover_image_url': book.cover_image_url,
-                    'content': user_article.rating,
+                    'content': user_article.content,
                     'create_time': user_article.create_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
                 })
         return result

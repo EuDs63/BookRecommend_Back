@@ -7,7 +7,7 @@ from utils.data_process import Data_Process, Paginate_Process
 logger = create_logger(__name__)
 
 
-def api_add_action(type, user_id, book_id, content):
+def api_add_action(type, user_id, book_id, content,article_title):
     result = {}
     a = action_operation()
     # 根据type来区分不同的action:
@@ -19,7 +19,7 @@ def api_add_action(type, user_id, book_id, content):
     elif type == 3:
         a.add_user_rating(user_id, book_id, content)
     elif type == 4:
-        a.add_user_article(user_id, book_id, content)
+        a.add_user_article(user_id, book_id, content,article_title)
     else:
         result["code"] = -1
         result["msg"] = "不支持的action type"
