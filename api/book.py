@@ -154,7 +154,22 @@ def api_get_recommend(user_id):
     result['books'] = []
     if book_data != 0:
         result['book_id'] = list(book_data.keys())
-        for book_id in list(book_data.keys()):
+        # 已有的book_id
+        existing_book_ids = result['book_id']
+        # 生成随机数字，确保不重复
+        def generate_random_numbers(existing_numbers, n):
+            random_numbers = set()
+            while len(random_numbers) < n:
+                new_number = random.randint(1, 8)
+                if new_number not in existing_numbers and new_number not in random_numbers:
+                    random_numbers.add(new_number)
+            return list(random_numbers)
+        # 检查需要生成的数量
+        remaining_count = 5 - len(existing_book_ids)
+        if remaining_count > 0:
+            random_numbers = generate_random_numbers(existing_book_ids, remaining_count)
+            result['book_id'].extend(random_numbers)
+        for book_id in list(result['book_id']):
             data = b.get_book_by_id(book_id)
             book = Data_Process(data, b.detail_field, 1)
             result["books"].append(book)
