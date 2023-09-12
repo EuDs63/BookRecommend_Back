@@ -1,4 +1,5 @@
 import pickle
+from random import random
 
 import numpy as np
 from sqlalchemy import desc
@@ -333,17 +334,35 @@ class book_operation:
     # 推荐功能
     def Recommendation(self, user_id):
         rank_rs = {}
-        u_items = self.generateBookRating()[user_id]
+        u_items = self.generateBookRating().get(user_id, {})  # 使用get方法以防用户不存在
         print(u_items)
-        with open('similarity_matrix.pkl', 'rb') as file:
-            W = pickle.load(file)
-        for i, rui in u_items.items():
-            print(i, rui)
-            for j, wij in sorted(W[i].items(), key=lambda x: x[1], reverse=True)[0:10]:
-                if j in u_items:
-                    continue
-                rank_rs.setdefault(j, 0)
-                rank_rs[j] += rui * wij
-        top_k_recommendations = dict(sorted(rank_rs.items(), key=lambda x: x[1], reverse=True)[:10])
-        print(top_k_recommendations)
-        return top_k_recommendations  # 键为bookId,值为bookRating的字典
+
+        try:
+            with open('similarity_matrix.pkl', 'rb') as file:
+                W = pickle.load(file)
+
+            for i, rui in u_items.items():
+                print(i, rui)
+                for j, wij in sorted(W.get(i, {}).items(), key=lambda x: x[1], reverse=True)[0:5]:
+                    if j in u_items:
+                        continue
+                    rank_rs.setdefault(j, 0)
+                    rank_rs[j] += rui * wij
+
+            top_k_recommendations = dict(sorted(rank_rs.items(), key=lambda x: x[1], reverse=True)[:5])
+            print(top_k_recommendations)
+            return top_k_recommendations  # 键为bookId, 值为bookRating的字典
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            # 如果发生错误，返回一个包含不重复1-8数字和随机1-10书评的字典
+            random_recommendations = {}
+            unique_numbers = set()
+            while len(random_recommendations) < 5:
+                random_book_id = random.randint(1, 8)
+                if random_book_id not in unique_numbers:
+                    unique_numbers.add(random_book_id)
+                    random_rating = random.randint(1, 10)
+                    random_recommendations[random_book_id] = random_rating
+
+            return random_recommendations
