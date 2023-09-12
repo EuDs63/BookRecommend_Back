@@ -17,6 +17,7 @@ logger = create_logger(__name__)
 class action_operation:
     def __init__(self):
         self.action_type = ['user_collect', 'user_comment', 'user_rating', 'user_article']
+        self.article_field = ['article_id', 'book_id', 'user_id', 'content', 'article_title', 'create_time']
 
     def add_user_collect(self, user_id, book_id, content):
         user_collect = UserCollect(user_id=user_id, book_id=book_id, collect_type=content)
@@ -295,6 +296,7 @@ class action_operation:
                 })
         return result
 
+    # 获取article_record
     def get_user_article_rocord(self, method, user_id, book_id, current_page, page_size):
         result = []
         if method == 1:
@@ -312,7 +314,6 @@ class action_operation:
                     'user_id': user.user_id,
                     'article_title': user_article.article_title,
                     'avatar_path': user.avatar_path,
-                    'content': user_article.content,
                     'create_time': user_article.create_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
                 })
         # 根据user_id查找
@@ -332,7 +333,11 @@ class action_operation:
                     'title': book.title,
                     'article_title': user_article.article_title,
                     'cover_image_url': book.cover_image_url,
-                    'content': user_article.content,
                     'create_time': user_article.create_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间
                 })
         return result
+
+    # 获取article
+    def get_article_by_article_id(self, article_id):
+        article = UserArticle.query.filter_by(article_id=article_id).first()
+        return article

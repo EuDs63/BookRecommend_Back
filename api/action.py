@@ -1,4 +1,7 @@
 from operation.action import action_operation
+from models.users import Users
+from models.books import Books
+from models.user_article import UserArticle
 from logger import create_logger
 from db_config import db_init as db
 from utils.data_process import Data_Process, Paginate_Process
@@ -7,7 +10,7 @@ from utils.data_process import Data_Process, Paginate_Process
 logger = create_logger(__name__)
 
 
-def api_add_action(type, user_id, book_id, content,article_title):
+def api_add_action(type, user_id, book_id, content, article_title):
     result = {}
     a = action_operation()
     # 根据type来区分不同的action:
@@ -19,7 +22,7 @@ def api_add_action(type, user_id, book_id, content,article_title):
     elif type == 3:
         a.add_user_rating(user_id, book_id, content)
     elif type == 4:
-        a.add_user_article(user_id, book_id, content,article_title)
+        a.add_user_article(user_id, book_id, content, article_title)
     else:
         result["code"] = -1
         result["msg"] = "不支持的action type"
@@ -86,9 +89,31 @@ def api_get_rating_record(method, book_id, user_id, current_page, page_size):
                                       page_size=page_size)
     return result
 
-# 获取article
+
+# 获取article_record
 def api_get_article_record(method, book_id, user_id, current_page, page_size):
     a = action_operation()
     result = a.get_user_article_rocord(method=method, user_id=user_id, book_id=book_id, current_page=current_page,
-                                      page_size=page_size)
+                                       page_size=page_size)
+    return result
+
+
+# 获取article
+def api_get_article(article_id):
+    result = {}
+    a = action_operation()
+    data = a.get_article_by_article_id(article_id)
+    if data is not None:
+        result = Data_Process(data, a.article_field, 1)
+
+        user_article_records = db.session.query(UserArticle, Users, Books) \
+            .join(Books, UserArticle.book_id == Books.book_id) \
+            .join(Users, UserArticle.user_id == Users.user_id) \
+            .filter(UserArticle.article_id == article_id)
+
+        for user_article, user, book in user_article_records:
+            result['title'] = book.title
+            result['cover_image_url'] = book.cover_image_url
+            result['username'] = user.username
+            result['avatar_path'] = user.avatar_path
     return result

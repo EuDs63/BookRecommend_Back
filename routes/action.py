@@ -85,14 +85,20 @@ def get_comment(method, book_id, user_id):
 
 # 获取article
 @action.route('/article/<int:method>/<int:book_id>/<int:user_id>')
-def get_article(method, book_id, user_id):
+def get_article_record(method, book_id, user_id):
     current_page = int(request.args.get('current_page', 1))
     page_size = int(request.args.get('page_size', 3))
     logger.info(
-        "try to get comment,method is {},book_id is {}, user_id is {},current_page is {} ".format(method, book_id,
+        "try to get article record,method is {},book_id is {}, user_id is {},current_page is {} ".format(method, book_id,
                                                                                                   user_id,
                                                                                                   current_page))
     result = api_get_article_record(method, book_id, user_id, current_page, page_size)
+    return result
+
+@action.route('/article/view/<int:article_id>')
+def get_article(article_id):
+    logger.info('try to get article by article_id'.format(article_id))
+    result = api_get_article(article_id)
     return result
 
 
