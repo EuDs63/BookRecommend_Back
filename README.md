@@ -2,6 +2,10 @@
 
 **此处存放后端项目**
 
+## 参考
+- [FLASK](https://flask.palletsprojects.com/en/2.3.x/quickstart/)
+- [flask-sqlalchemy](https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/)
+
 ## 配置
 
 1. 修改config.py.example中的内容
