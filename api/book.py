@@ -160,7 +160,7 @@ def api_get_recommend(user_id):
         def generate_random_numbers(existing_numbers, n):
             random_numbers = set()
             while len(random_numbers) < n:
-                new_number = random.randint(1, 8)
+                new_number = random.randint(1, 1800)
                 if new_number not in existing_numbers and new_number not in random_numbers:
                     random_numbers.add(new_number)
             return list(random_numbers)

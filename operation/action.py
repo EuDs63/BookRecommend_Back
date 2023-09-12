@@ -299,9 +299,10 @@ class action_operation:
     # 获取article_record
     def get_user_article_rocord(self, method, user_id, book_id, current_page, page_size):
         result = []
+        # 根据book_id查找
         if method == 1:
             user_article_records = db.session.query(UserArticle, Users) \
-                .join(Users, UserArticle.user_id == Books.user_id) \
+                .join(Users, UserArticle.user_id == Users.user_id) \
                 .filter(UserArticle.book_id == book_id)
 
             # 从新到旧排列
@@ -312,6 +313,7 @@ class action_operation:
             for user_article, user in user_article_records:
                 result.append({
                     'user_id': user.user_id,
+                    'article_id' : user_article.article_id,
                     'article_title': user_article.article_title,
                     'avatar_path': user.avatar_path,
                     'create_time': user_article.create_time.strftime('%Y-%m-%d %H:%M:%S')  # 格式化时间

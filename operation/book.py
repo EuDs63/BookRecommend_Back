@@ -359,7 +359,7 @@ class book_operation:
             random_recommendations = {}
             unique_numbers = set()
             while len(random_recommendations) < 5:
-                random_book_id = random.randint(1, 8)
+                random_book_id = random.randint(1, 1800)
                 if random_book_id not in unique_numbers:
                     unique_numbers.add(random_book_id)
                     random_rating = random.randint(1, 10)

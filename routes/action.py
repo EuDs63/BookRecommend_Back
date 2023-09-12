@@ -87,7 +87,7 @@ def get_comment(method, book_id, user_id):
 @action.route('/article/<int:method>/<int:book_id>/<int:user_id>')
 def get_article_record(method, book_id, user_id):
     current_page = int(request.args.get('current_page', 1))
-    page_size = int(request.args.get('page_size', 3))
+    page_size = int(request.args.get('page_size', 5))
     logger.info(
         "try to get article record,method is {},book_id is {}, user_id is {},current_page is {} ".format(method, book_id,
                                                                                                   user_id,
