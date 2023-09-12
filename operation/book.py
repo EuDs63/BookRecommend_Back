@@ -330,6 +330,7 @@ class book_operation:
             pickle.dump(W, file)
         return W
 
+    # 推荐功能
     def Recommendation(self, user_id):
         rank_rs = {}
         u_items = self.generateBookRating()[user_id]
@@ -337,7 +338,7 @@ class book_operation:
         with open('similarity_matrix.pkl', 'rb') as file:
             W = pickle.load(file)
         for i, rui in u_items.items():
-            print(i,rui)
+            print(i, rui)
             for j, wij in sorted(W[i].items(), key=lambda x: x[1], reverse=True)[0:10]:
                 if j in u_items:
                     continue

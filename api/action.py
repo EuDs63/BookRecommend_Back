@@ -18,6 +18,8 @@ def api_add_action(type, user_id, book_id, content):
         a.add_user_comment(user_id, book_id, content)
     elif type == 3:
         a.add_user_rating(user_id, book_id, content)
+    elif type == 4:
+        a.add_user_article(user_id, book_id, content)
     else:
         result["code"] = -1
         result["msg"] = "不支持的action type"
@@ -81,5 +83,12 @@ def api_get_comment_record(method, book_id, user_id, current_page, page_size):
 def api_get_rating_record(method, book_id, user_id, current_page, page_size):
     a = action_operation()
     result = a.get_user_rating_rocord(method=method, user_id=user_id, book_id=book_id, current_page=current_page,
+                                      page_size=page_size)
+    return result
+
+# 获取article
+def api_get_article_record(method, book_id, user_id, current_page, page_size):
+    a = action_operation()
+    result = a.get_user_article_rocord(method=method, user_id=user_id, book_id=book_id, current_page=current_page,
                                       page_size=page_size)
     return result

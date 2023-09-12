@@ -19,7 +19,7 @@ def add_action():
     book_id = data['book_id']
     content = data['content']
     # 根据type来区分不同的action:
-    # 1：collect; 2：comment 3: rating
+    # 1：collect; 2：comment 3: rating 4: article
     logger.info("user {} try to add action , type is {}".format(user_id, type))
     result = api_add_action(type, user_id, book_id, content)
     return result
@@ -76,3 +76,18 @@ def get_comment(method, book_id, user_id):
                                                                                                   current_page))
     result = api_get_comment_record(method, book_id, user_id, current_page, page_size)
     return result
+
+
+# 获取article
+@action.route('/article/<int:method>/<int:book_id>/<int:user_id>')
+def get_article(method, book_id, user_id):
+    current_page = int(request.args.get('current_page', 1))
+    page_size = int(request.args.get('page_size', 3))
+    logger.info(
+        "try to get comment,method is {},book_id is {}, user_id is {},current_page is {} ".format(method, book_id,
+                                                                                                  user_id,
+                                                                                                  current_page))
+    result = api_get_article_record(method, book_id, user_id, current_page, page_size)
+    return result
+
+

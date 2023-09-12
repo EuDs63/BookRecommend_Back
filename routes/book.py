@@ -173,11 +173,9 @@ def train():
     result = api_train()
     return result
 
-
-@book.route('/getrec', methods=['POST'])
-def getrec():
-    data = json.loads(request.data)
-    user_id = data['user_id']
+# 根据user_id获得相关推荐
+@book.route('/getrec/<int:user_id>', methods=['GET'])
+def getrec(user_id):
     result = api_get_recommend(user_id)
     return result
 
