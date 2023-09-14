@@ -285,19 +285,19 @@ class book_operation:
                 is_book_collected = self.isbookcollected(book_id, user_id)
                 is_book_having_comments = self.isBookHavingComments(book_id, user_id)
                 # 根据评分和其他信息计算评分分数
-                if rating[0] == 8.0:
+                if rating[0] == 9.9:
+                    rating_score += 3
+                elif rating[0] == 8.0:
                     rating_score += 2
                 elif rating[0] == 6.0:
                     rating_score += 1
-                elif rating[0] == 9.9:
-                    rating_score += 3
                 elif rating[0] == 4.0:
                     rating_score -= 1
                 else:
                     rating_score -= 2
-                if is_book_collected:
-                    rating_score += 1
                 if is_book_having_comments:
+                    rating_score += 1
+                if is_book_collected:
                     rating_score += 2
                 # 将每本书籍及其评分分数添加到用户的评分字典中
                 user_rating_dict[book_id] = rating_score
@@ -336,11 +336,9 @@ class book_operation:
         rank_rs = {}
         u_items = self.generateBookRating().get(user_id, {})  # 使用get方法以防用户不存在
         print(u_items)
-
         try:
             with open('similarity_matrix.pkl', 'rb') as file:
                 W = pickle.load(file)
-
             for i, rui in u_items.items():
                 print(i, rui)
                 for j, wij in sorted(W.get(i, {}).items(), key=lambda x: x[1], reverse=True)[0:5]:
@@ -348,14 +346,11 @@ class book_operation:
                         continue
                     rank_rs.setdefault(j, 0)
                     rank_rs[j] += rui * wij
-
             top_k_recommendations = dict(sorted(rank_rs.items(), key=lambda x: x[1], reverse=True)[:5])
             print(top_k_recommendations)
             return top_k_recommendations  # 键为bookId, 值为bookRating的字典
-
         except Exception as e:
             print(f"An error occurred: {e}")
-            # 如果发生错误，返回一个包含不重复1-8数字和随机1-10书评的字典
             random_recommendations = {}
             unique_numbers = set()
             while len(random_recommendations) < 5:
@@ -364,5 +359,4 @@ class book_operation:
                     unique_numbers.add(random_book_id)
                     random_rating = random.randint(1, 10)
                     random_recommendations[random_book_id] = random_rating
-
             return random_recommendations
