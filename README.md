@@ -21,6 +21,14 @@
   ![数据库结构图](book_recommend.png)
 - 前端仓库地址： [BookRecommend_Front](https://github.com/EuDs63/BookRecommend_Front)
 - 书籍数据爬虫代码： [DoubanSpider](https://github.com/EuDs63/DoubanSpider)
+
+
+## 小组成员
+- [EuDs63](https://github.com/EuDs63)
+- [sun-yih](https://github.com/EuDs63)
+- [SEUKURISU](https://github.com/SEUKURISU)
+- [71121205](https://github.com/71121205)
+
 ## 技术参考
 - [FLASK](https://flask.palletsprojects.com/en/2.3.x/quickstart/)
 - [flask-sqlalchemy](https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/)
