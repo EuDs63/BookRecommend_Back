@@ -21,6 +21,7 @@
   ![数据库结构图](book_recommend.png)
 - 前端仓库地址： [BookRecommend_Front](https://github.com/EuDs63/BookRecommend_Front)
 - 书籍数据爬虫代码： [DoubanSpider](https://github.com/EuDs63/DoubanSpider)
+- 部署记录： [“一本好书”部署记录 | EuDs's Blog](https://ds63.eu.org/2023/%E4%B8%80%E6%9C%AC%E5%A5%BD%E4%B9%A6%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/)
 
 
 ## 小组成员
